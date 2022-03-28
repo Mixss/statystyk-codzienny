@@ -18,7 +18,7 @@ async def stat(ctx):
     await ctx.send(stats.get_final_respond())
 
 async def send_message(message):
-    channel = client.get_channel(828951713074380840)
+    channel = client.get_channel(958119472793780304)
     await channel.send(message)
 
 @tasks.loop(minutes=30)
