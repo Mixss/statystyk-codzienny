@@ -1,9 +1,10 @@
 import csv
 import math
+import time
 from datetime import date, datetime
 import urllib.request, json
 
-UTC_DIFFERENCE = 2
+UTC_DIFFERENCE = time.localtime().tm_hour - time.gmtime().tm_hour
 
 days_of_week = {
     0 : "poniedziałek",
@@ -128,22 +129,8 @@ def get_forecast():
             info = weather["weather"]
 
 
-
-
-        # with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
-        #                             "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
-        #     data = json.loads(url.read())
-        #     headline = data["Headline"]["Text"]
-        #     minTemp = math.floor(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
-        #     maxTemp = math.floor(data["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"])
-        #     info = data["DailyForecasts"][0]["Day"]["LongPhrase"]
-        #     rain = data["DailyForecasts"][0]["Day"]["HasPrecipitation"]
-        #     wind = data["DailyForecasts"][0]["Day"]["Wind"]["Speed"]["Value"]
-        #     air = data["DailyForecasts"][0]["AirAndPollen"][0]["Category"]
-        #     print(air)
-
     return headline, minTemp, maxTemp, info, rain, wind, air
 
 
-get_forecast()
+
 
