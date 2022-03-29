@@ -17,8 +17,13 @@ async def on_ready():
 async def stat(ctx):
     await ctx.send(stats.get_final_respond())
 
+@client.command()
+async def chuj(ctx):
+    await ctx.send("chuj")
+
 async def send_message(message):
-    channel = client.get_channel(958119472793780304)
+    # channel = client.get_channel(958119472793780304) # kanał esovisco
+    channel = client.get_channel(828951713074380840) #kanał ewingi
     await channel.send(message)
 
 @tasks.loop(minutes=30)

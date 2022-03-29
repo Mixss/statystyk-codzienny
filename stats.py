@@ -81,9 +81,7 @@ def get_final_respond():
              f" > :fire: max: **{maxTemp} °C**\n" \
              f" \n:white_sun_small_cloud: Spodziewana pogoda: \n" \
              f"*{forecastInfo}*" \
-             f"{rain_info}\n" \
              f" \n" \
-             f":dash: Jakość powietrza: *{air}*\n" \
              f""
 
     return result
@@ -110,29 +108,42 @@ def get_sunset_sunrise():
     return sunrise, sunset
 
 def get_forecast():
+    # https://worldweather.wmo.int/pl/json/25_pl.xml
+
+    headline = "Chmury i słońce"
+    minTemp = 4
+    maxTemp = 11
+    info = "Chmury i słońce"
+    rain = False
+    wind = 30
+    air = "Dobre"
+
+
     if true_forecast:
-        with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
-                                    "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+        with urllib.request.urlopen("https://worldweather.wmo.int/pl/json/25_pl.xml") as url:
             data = json.loads(url.read())
-            headline = data["Headline"]["Text"]
-            minTemp = math.floor(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
-            maxTemp = math.floor(data["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"])
-            info = data["DailyForecasts"][0]["Day"]["LongPhrase"]
-            rain = data["DailyForecasts"][0]["Day"]["HasPrecipitation"]
-            wind = data["DailyForecasts"][0]["Day"]["Wind"]["Speed"]["Value"]
-            air = data["DailyForecasts"][0]["AirAndPollen"][0]["Category"]
-            print(air)
-    else:
-        headline= "Chmury i słońce"
-        minTemp = 4
-        maxTemp = 11
-        info = "Chmury i słońce"
-        rain = False
-        wind = 30
-        air = "Dobre"
+            weather = data["city"]["forecast"]["forecastDay"][0]
+            minTemp = weather["minTemp"]
+            maxTemp = weather["maxTemp"]
+            info = weather["weather"]
+
+
+
+
+        # with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
+        #                             "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+        #     data = json.loads(url.read())
+        #     headline = data["Headline"]["Text"]
+        #     minTemp = math.floor(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
+        #     maxTemp = math.floor(data["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"])
+        #     info = data["DailyForecasts"][0]["Day"]["LongPhrase"]
+        #     rain = data["DailyForecasts"][0]["Day"]["HasPrecipitation"]
+        #     wind = data["DailyForecasts"][0]["Day"]["Wind"]["Speed"]["Value"]
+        #     air = data["DailyForecasts"][0]["AirAndPollen"][0]["Category"]
+        #     print(air)
 
     return headline, minTemp, maxTemp, info, rain, wind, air
 
 
-
+get_forecast()
 
