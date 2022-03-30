@@ -42,7 +42,7 @@ def get_channels():
 
 def get_daily_stats_message():
     sr, ss = get_sunset_sunrise()
-    forecastText, minTemp, maxTemp, forecastInfo, raining, wind, air = get_daily_forecast()
+    forecastText, minTemp, maxTemp, forecastInfo, raining, air, uvidex, uvdanger, moon_phase = get_daily_forecast()
 
     message = f"Statystyki na dzień **{get_today()}** ({get_day_of_week()}): \n" \
               f" \n" \
@@ -52,6 +52,8 @@ def get_daily_stats_message():
               f"Wschód słońca:  :sunrise:  **{sr}**\n" \
               f"Zachód słońca:  :city_sunset:   **{ss}**\n" \
               f" \n" \
+              f"Faza księżyca: {moon_phase}\n" \
+              f" \n" \
               f"Imieniny: :couple: *{get_today_names()}* \n" \
               f" \n" \
               f" :white_sun_cloud: **Prognoza pogody**\n" \
@@ -59,8 +61,10 @@ def get_daily_stats_message():
               f" > :snowflake: min: **{minTemp} °C**\n" \
               f" > :fire: max: **{maxTemp} °C**\n" \
               f" \n:white_sun_small_cloud: Spodziewana pogoda: \n" \
-              f"*{forecastInfo}*" \
-              f" \n" \
+              f"*{forecastInfo}* \n" \
+              f"*Prawdopodobieństwo deszczu:*  **{raining}%** \n\n" \
+              f":mask: Jakość powietrza: *{air}* \n" \
+              f":sunglasses: Index UV: **{uvidex}** (Zagrożenie: *{uvdanger}*) \n " \
               f""
 
     return message

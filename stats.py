@@ -14,6 +14,16 @@ days_of_week = {
     6: "niedziela"
 }
 
+moon_phases = {
+    "NewMoon": ":new_moon:",
+    "WaningCrescent": ":waning_crescent_moon:",
+    "ThirdQuarter": ":last_quarter_moon:",
+    "WaningGibbous": ":waning_gibbous_moon:",
+    "FullMoon": ":full_moon:",
+    "WaxingGibbous": ":waxing_gibbous_moon:",
+    "FirstQuarter": ":first_quarter_moon:",
+    "WaxingCrescent": ":waxing_crescent_moon:"
+}
 
 def get_today():
     return date.today().strftime("%d.%m")
@@ -145,13 +155,13 @@ def get_daily_forecast():
     minTemp = round(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
     maxTemp = round(data["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"])
     info = data["DailyForecasts"][0]["Day"]["LongPhrase"]
-    rain = False
-    wind = 30
-    air = "Dobre"
+    rain = data["DailyForecasts"][0]["Day"]["RainProbability"]
+    air = data["DailyForecasts"][0]["AirAndPollen"][0]["Category"]
+    uvindex = data["DailyForecasts"][0]["AirAndPollen"][5]["Value"]
+    uvdanger = data["DailyForecasts"][0]["AirAndPollen"][5]["Category"]
+    moon = moon_phases[data["DailyForecasts"][0]["Moon"]["Phase"]]
 
-    # TODO ustalić jakie zmienne będą zwracane
-
-    return headline, minTemp, maxTemp, info, rain, wind, air
+    return headline, minTemp, maxTemp, info, rain, air, uvindex, uvdanger, moon
 
 
 def get_hourly_forecast():

@@ -22,7 +22,7 @@ async def on_ready():
                 description="Wysyła informacje na temat dzisiejszego dnia.\n"
                             "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
 async def stat(ctx):
-    await ctx.send(stats.get_final_respond())
+    await ctx.send(bc.get_daily_stats_message())
 
 
 @client.command(brief="- says chuj")
