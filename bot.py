@@ -4,34 +4,48 @@ from discord.ext import commands, tasks
 
 import stats
 import bot_config as bc
+
 intents = discord.Intents().all()
 
 client = commands.Bot(command_prefix='s!', intents=intents)
 
+
 @client.event
 async def on_ready():
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Srogie Jaja Mikołaja"))
     print("Bot started successfully")
     send_stats.start()
 
 
-@client.command(brief="- ends general information about this day")
+@client.command(brief="- wysyła ogólne informacje o dzisiejszym dniu",
+                description="Wysyła informacje na temat dzisiejszego dnia.\n"
+                            "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
 async def stat(ctx):
     await ctx.send(stats.get_final_respond())
+
 
 @client.command(brief="- says chuj")
 async def chuj(ctx):
     await ctx.send("chuj")
 
-@client.command()
-async def channel(ctx, arg1):
 
-    if arg1 == "test":
-        await send_message(f"{ctx.message.author.mention} Ten kanał jest ustawiony jako domyślny.", ctx.message.guild.id)
-    elif arg1 == "set":
-        await ctx.send("Ten kanał został ustawiony jako domyślny.")
-        bc.set_default_channel(ctx.message.guild.id, ctx.message.channel.id)
+@client.command(brief="- zarządzanie domyślnym kanałem",
+                description="\nPozwala zarządzać domyślnym kanałem: \n"
+                            "- channel set: ustawia wybrany kanał jako domyślny \n"
+                            "- channel check: sprawdza, który kanał jest ustawiony jako domyślny\n")
+async def channel(ctx, *args):
+    if len(args) == 1:
+        if args[0] == "check":
+            await send_message(f"{ctx.message.author.mention} Ten kanał jest ustawiony jako domyślny.",
+                               ctx.message.guild.id)
+        elif args[0] == "set":
+            await ctx.send("Ten kanał został ustawiony jako domyślny.")
+            bc.set_default_channel(ctx.message.guild.id, ctx.message.channel.id)
+        else:
+            await ctx.send("Niepoprawny argument, użyj: `s!help channel`")
     else:
-        await ctx.send("Nie poprawna komenda, użyj: s!help channel")
+        await ctx.send("Niepoprawne użycie, użyj: `s!help channel`")
+
 
 # sends the same message to the channels defined i the file data/config.json
 # to add a channel to the config run 'channel set' command on the channel
@@ -42,6 +56,7 @@ async def broadcast_message(message):
         channel = client.get_channel(channel_id)
         await channel.send(message)
 
+
 # sends message to a 'default' channel defined in config.json
 async def send_message(message, server_id):
     list = bc.get_channels()
@@ -51,6 +66,7 @@ async def send_message(message, server_id):
             await channel.send(message)
             break
 
+
 @tasks.loop(minutes=30)
 async def send_stats():
     now = datetime.now()
@@ -58,11 +74,5 @@ async def send_stats():
     minute = now.minute
     if 6 - stats.get_utc_difference() <= hour < 7 - stats.get_utc_difference():
         if 15 <= minute < 45:
-            print(f"{hour}:{minute} -> wysyłam poranne statystyki")
+            print(f"{hour}:{minute} -> wysyłam pobranne statystyki")
             await broadcast_message(stats.get_final_respond())
-
-
-
-
-
-

@@ -68,4 +68,4 @@ draw_text((191, 188, 186), 0.9)
 cv.imshow('image', image)
 cv.waitKey(0)
 
-cv.imwrite("./image.png", image)
+cv.imwrite("./generated_images/image.png", image)
