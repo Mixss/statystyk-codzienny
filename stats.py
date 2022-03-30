@@ -14,9 +14,6 @@ days_of_week = {
     6: "niedziela"
 }
 
-true_forecast = False
-
-
 def get_today():
     return date.today().strftime("%d.%m")
 
@@ -93,8 +90,14 @@ def get_final_respond():
 
     return result
 
-
 def get_sunset_sunrise():
+    data = download_forecast(type="daily")
+    sunrise = data["DailyForecasts"][0]["Sun"]["Rise"][11:16]
+    sunset = data["DailyForecasts"][0]["Sun"]["Set"][11:16]
+
+    return sunrise, sunset
+
+def get_sunset_sunrise_old():
     with urllib.request.urlopen("https://api.sunrise-sunset.org/json?lat=54.409724&lng=18.634314") as url:
         data = json.loads(url.read())
         sunrise = data["results"]["sunrise"]
@@ -148,7 +151,9 @@ def download_forecast(type='daily'):
             # forecast data is outdated
             print("Downloading new file: forecast_12_hours.json")
 
-            with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/275174?apikey=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+            with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/275174?apikey"
+                                        "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") \
+                    as url:
                 data = json.loads(url.read())
                 with open("data/forecast_12_hours.json", "w") as new_forecast:
                     json.dump(data, new_forecast)
@@ -193,4 +198,4 @@ def get_hourly_forecast():
 
     return result
 
-print(get_hourly_forecast())
+print(get_sunset_sunrise())
