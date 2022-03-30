@@ -43,6 +43,7 @@ def get_channels():
 def get_daily_stats_message():
     sr, ss = get_sunset_sunrise()
     forecastText, minTemp, maxTemp, forecastInfo, raining, air, uvidex, uvdanger, moon_phase = get_daily_forecast()
+    euro, usd = get_currencies()
 
     message = f"Statystyki na dzień **{get_today()}** ({get_day_of_week()}): \n" \
               f" \n" \
@@ -52,7 +53,7 @@ def get_daily_stats_message():
               f"Wschód słońca:  :sunrise:  **{sr}**\n" \
               f"Zachód słońca:  :city_sunset:   **{ss}**\n" \
               f" \n" \
-              f"Faza księżyca: {moon_phase}\n" \
+              f"Faza księżyca:   {moon_phase}\n" \
               f" \n" \
               f"Imieniny: :couple: *{get_today_names()}* \n" \
               f" \n" \
@@ -65,6 +66,10 @@ def get_daily_stats_message():
               f"*Prawdopodobieństwo deszczu:*  **{raining}%** \n\n" \
               f":mask: Jakość powietrza: *{air}* \n" \
               f":sunglasses: Index UV: **{uvidex}** (Zagrożenie: *{uvdanger}*) \n " \
+              f" \n" \
+              f":moneybag: Finanse: \n" \
+              f":euro: 1 EUR = **{euro}** PLN\n" \
+              f":dollar: 1 USD = **{usd}** PLN\n" \
               f""
 
     return message

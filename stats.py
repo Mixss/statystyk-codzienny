@@ -3,6 +3,7 @@ import math
 import time
 from datetime import date, datetime
 import urllib.request, json
+import http.client
 
 days_of_week = {
     0: "poniedziałek",
@@ -77,28 +78,6 @@ def get_sunset_sunrise():
     data = download_forecast(type="daily")
     sunrise = data["DailyForecasts"][0]["Sun"]["Rise"][11:16]
     sunset = data["DailyForecasts"][0]["Sun"]["Set"][11:16]
-
-    return sunrise, sunset
-
-
-def get_sunset_sunrise_old():
-    with urllib.request.urlopen("https://api.sunrise-sunset.org/json?lat=54.409724&lng=18.634314") as url:
-        data = json.loads(url.read())
-        sunrise = data["results"]["sunrise"]
-        sunrise = sunrise[0:len(sunrise) - 6]
-        sunset = data["results"]["sunset"]
-        sunset = sunset[0:len(sunset) - 6]
-
-        # add 12h and utc to sunset format
-        if sunset[1] == ':':
-            hour = int(sunset[0]) + 12 + get_utc_difference()
-            sunset = sunset[1:4]
-            sunset = f"{hour}{sunset}"
-
-        # add utc to sunrise
-        hour = int(sunrise[0]) + get_utc_difference()
-        sunrise = sunrise[1:4]
-        sunrise = f"{hour}{sunrise}"
 
     return sunrise, sunset
 
@@ -180,14 +159,34 @@ def get_hourly_forecast():
 
     return result
 
-
 def get_current_weather():
     with urllib.request.urlopen("https://danepubliczne.imgw.pl/api/data/synop/station/gdansk") as url:
         data = json.loads(url.read())
-    time_of_measurement = data["godzina_pomiaru"]
+    time_of_measurement = data["godzina_pomiaru"] + get_utc_difference()
     temperature = round(float(data["temperatura"]))
     wind_speed = data["predkosc_wiatru"]
     fall = data["suma_opadu"]
     pressure = data["cisnienie"]
 
     return time_of_measurement, temperature, wind_speed, fall, pressure
+
+
+def get_currencies():
+
+    try:
+        with urllib.request.urlopen("https://api.nbp.pl/api/exchangerates/rates/a/eur/today?format=json") as url:
+            data_euro = json.loads(url.read())
+        with urllib.request.urlopen("https://api.nbp.pl/api/exchangerates/rates/a/usd/today?format=json") as url:
+            data_usd = json.loads(url.read())
+        euro = round(data_euro["rates"][0]["mid"], 2)
+        usd = round(data_usd["rates"][0]["mid"], 2)
+    except:
+        euro = 4.50
+        usd = 4.00
+
+
+    return euro, usd
+
+
+
+
