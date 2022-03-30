@@ -12,7 +12,8 @@ client = commands.Bot(command_prefix='s!', intents=intents)
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Srogie Jaja Mikołaja"))
+    await client.change_presence(
+        activity=discord.Activity(type=discord.ActivityType.listening, name="Srogie Jaja Mikołaja"))
     print("Bot started successfully")
     send_stats.start()
 
@@ -32,7 +33,8 @@ async def chuj(ctx):
 @client.command(brief="- zarządzanie domyślnym kanałem",
                 description="\nPozwala zarządzać domyślnym kanałem: \n"
                             "- channel set: ustawia wybrany kanał jako domyślny \n"
-                            "- channel check: sprawdza, który kanał jest ustawiony jako domyślny\n")
+                            "- channel check: sprawdza, który kanał jest ustawiony jako domyślny\n"
+                            "- channel unset: usuwa kanał domyślny\n")
 async def channel(ctx, *args):
     if len(args) == 1:
         if args[0] == "check":
@@ -41,10 +43,25 @@ async def channel(ctx, *args):
         elif args[0] == "set":
             await ctx.send("Ten kanał został ustawiony jako domyślny.")
             bc.set_default_channel(ctx.message.guild.id, ctx.message.channel.id)
+        elif args[0] == "unset":
+            if bc.unset_default_channel(ctx.message.guild.id):
+                await ctx.send(
+                    "Kanał nie jest już kanałem domyślnym. Jeżeli dalej chcesz otrzymywać codzienne statystyki "
+                    "ustaw jeden z kanałów jako domyślny używając `s!channel set`")
+            else:
+                await ctx.send("Nie usunięto kanału domyślnego. Prawdopodobnie ten serwer nie posiada kanału "
+                               "domyślnego. Możesz go ustawić za pomocą `s!channel set`")
         else:
             await ctx.send("Niepoprawny argument, użyj: `s!help channel`")
     else:
         await ctx.send("Niepoprawne użycie, użyj: `s!help channel`")
+
+
+@client.command(brief="- pokazuje aktualną pogodę", description="Wyświetla aktualną pogodę w Gdańsku. \n Informacja "
+                                                                "zawiera informacje o godzinie pomiaru, temperaturze,"
+                                                                " prędkości wiatru, opadach i ciśnieniu.")
+async def weather(ctx):
+    await ctx.send(bc.get_current_weather_message())
 
 
 # sends the same message to the channels defined i the file data/config.json
@@ -75,4 +92,4 @@ async def send_stats():
     if 6 - stats.get_utc_difference() <= hour < 7 - stats.get_utc_difference():
         if 15 <= minute < 45:
             print(f"{hour}:{minute} -> wysyłam pobranne statystyki")
-            await broadcast_message(stats.get_final_respond())
+            await broadcast_message(bc.get_daily_stats_message())

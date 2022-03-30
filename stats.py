@@ -14,6 +14,7 @@ days_of_week = {
     6: "niedziela"
 }
 
+
 def get_today():
     return date.today().strftime("%d.%m")
 
@@ -62,40 +63,13 @@ def get_day_of_week():
     return days_of_week[day]
 
 
-def get_final_respond():
-    sr, ss = get_sunset_sunrise()
-    forecastText, minTemp, maxTemp, forecastInfo, raining, wind, air = get_daily_forecast()
-    rain_info = ""
-    if raining:
-        rain_info = "\n*Możliwe opady atmosferyczne*"
-
-    result = f"Statystyki na dzień **{get_today()}** ({get_day_of_week()}): \n" \
-             f" \n" \
-             f":date: Jest to **{get_day_of_the_year()}** dzień w roku i **{get_week_of_the_year()}** tydzień roku, " \
-             f"pozostało **{get_days_left_to_the_end_of_the_year()}** dni do końca roku, \n" \
-             f" \n" \
-             f"Wschód słońca:  :sunrise:  **{sr}**\n" \
-             f"Zachód słońca:  :city_sunset:   **{ss}**\n" \
-             f" \n" \
-             f"Imieniny: :couple: *{get_today_names()}* \n" \
-             f" \n" \
-             f" :white_sun_cloud: **Prognoza pogody**\n" \
-             f" :thermometer: Temperatura:\n" \
-             f" > :snowflake: min: **{minTemp} °C**\n" \
-             f" > :fire: max: **{maxTemp} °C**\n" \
-             f" \n:white_sun_small_cloud: Spodziewana pogoda: \n" \
-             f"*{forecastInfo}*" \
-             f" \n" \
-             f""
-
-    return result
-
 def get_sunset_sunrise():
     data = download_forecast(type="daily")
     sunrise = data["DailyForecasts"][0]["Sun"]["Rise"][11:16]
     sunset = data["DailyForecasts"][0]["Sun"]["Set"][11:16]
 
     return sunrise, sunset
+
 
 def get_sunset_sunrise_old():
     with urllib.request.urlopen("https://api.sunrise-sunset.org/json?lat=54.409724&lng=18.634314") as url:
@@ -121,6 +95,7 @@ def get_sunset_sunrise_old():
 
 def get_utc_difference():
     return time.localtime().tm_hour - time.gmtime().tm_hour
+
 
 def download_forecast(type='daily'):
     if type == 'daily':
@@ -160,13 +135,10 @@ def download_forecast(type='daily'):
 
         return data
 
-
-
     return []
 
 
 def get_daily_forecast():
-
     data = download_forecast(type='daily')
 
     headline = data["Headline"]["Text"]
@@ -177,10 +149,10 @@ def get_daily_forecast():
     wind = 30
     air = "Dobre"
 
-
-    #TODO ustalić jakie zmienne będą zwracane
+    # TODO ustalić jakie zmienne będą zwracane
 
     return headline, minTemp, maxTemp, info, rain, wind, air
+
 
 def get_hourly_forecast():
     data = download_forecast(type='hourly')
@@ -197,3 +169,15 @@ def get_hourly_forecast():
         result[hour] = [temperature, icon_nr, wind_speed, wind_direction]
 
     return result
+
+
+def get_current_weather():
+    with urllib.request.urlopen("https://danepubliczne.imgw.pl/api/data/synop/station/gdansk") as url:
+        data = json.loads(url.read())
+    time_of_measurement = data["godzina_pomiaru"]
+    temperature = round(float(data["temperatura"]))
+    wind_speed = data["predkosc_wiatru"]
+    fall = data["suma_opadu"]
+    pressure = data["cisnienie"]
+
+    return time_of_measurement, temperature, wind_speed, fall, pressure
