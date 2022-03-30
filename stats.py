@@ -4,8 +4,6 @@ import time
 from datetime import date, datetime
 import urllib.request, json
 
-UTC_DIFFERENCE = time.localtime().tm_hour - time.gmtime().tm_hour
-
 days_of_week = {
     0 : "poniedziałek",
     1 : "wtorek",
@@ -97,16 +95,20 @@ def get_sunset_sunrise():
 
         # add 12h and utc to sunset format
         if sunset[1] == ':':
-            hour = int(sunset[0]) + 12 + UTC_DIFFERENCE
+            hour = int(sunset[0]) + 12 + get_utc_difference()
             sunset = sunset[1:4]
             sunset = f"{hour}{sunset}"
 
         # add utc to sunrise
-        hour = int(sunrise[0]) + UTC_DIFFERENCE
+        hour = int(sunrise[0]) + get_utc_difference()
         sunrise = sunrise[1:4]
         sunrise = f"{hour}{sunrise}"
 
     return sunrise, sunset
+
+def get_utc_difference():
+    return time.localtime().tm_hour - time.gmtime().tm_hour
+
 
 def get_forecast():
     # https://worldweather.wmo.int/pl/json/25_pl.xml

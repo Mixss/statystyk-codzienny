@@ -31,7 +31,7 @@ async def send_stats():
     now = datetime.now()
     hour = now.hour
     minute = now.minute
-    if 6 <= hour < 7:
+    if 6 - stats.get_utc_difference() <= hour < 7 - stats.get_utc_difference():
         if 15 <= minute < 45:
             print(f"{hour}:{minute} -> wysyłam poranne statystyki")
             await send_message(stats.get_final_respond())
