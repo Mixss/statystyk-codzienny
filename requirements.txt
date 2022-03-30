@@ -1,5 +1,5 @@
-discord~=1.7.3
+discord
 
-matplotlib~=3.3.4
-numpy~=1.20.1
-opencv-python~=4.5.5.64
+matplotlib
+numpy
+opencv-python
