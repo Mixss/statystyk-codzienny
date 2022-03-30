@@ -5,28 +5,31 @@ from datetime import date, datetime
 import urllib.request, json
 
 days_of_week = {
-    0 : "poniedziałek",
-    1 : "wtorek",
-    2 : "środa",
-    3 : "czwartek",
-    4 : "piątek",
-    5 : "sobota",
-    6 : "niedziela"
+    0: "poniedziałek",
+    1: "wtorek",
+    2: "środa",
+    3: "czwartek",
+    4: "piątek",
+    5: "sobota",
+    6: "niedziela"
 }
 
-true_forecast = True
+true_forecast = False
+
 
 def get_today():
     return date.today().strftime("%d.%m")
 
+
 def get_imieniny_list():
     imieniny = {}
-    with open("imieniny.csv") as file_imieniny:
+    with open("data/imieniny.csv") as file_imieniny:
         csv_reader = csv.reader(file_imieniny, delimiter=',')
         line_count = 0
         for row in csv_reader:
             imieniny[f"{row[0]}{row[1]}"] = row[2]
     return imieniny
+
 
 def get_today_names():
     now = date.today().strftime("%d%m")
@@ -40,8 +43,10 @@ def get_today_names():
 
     return result
 
+
 def get_day_of_the_year():
     return datetime.now().timetuple().tm_yday
+
 
 def get_days_left_to_the_end_of_the_year():
     year = date.today().strftime("%y")
@@ -50,19 +55,22 @@ def get_days_left_to_the_end_of_the_year():
         days_in_year = 366
     return days_in_year - get_day_of_the_year()
 
+
 def get_week_of_the_year():
     return date.today().strftime("%V")
+
 
 def get_day_of_week():
     day = datetime.today().weekday()
     return days_of_week[day]
+
 
 def get_final_respond():
     sr, ss = get_sunset_sunrise()
     forecastText, minTemp, maxTemp, forecastInfo, raining, wind, air = get_forecast()
     rain_info = ""
     if raining:
-        rain_info="\n*Możliwe opady atmosferyczne*"
+        rain_info = "\n*Możliwe opady atmosferyczne*"
 
     result = f"Statystyki na dzień **{get_today()}** ({get_day_of_week()}): \n" \
              f" \n" \
@@ -85,13 +93,14 @@ def get_final_respond():
 
     return result
 
+
 def get_sunset_sunrise():
     with urllib.request.urlopen("https://api.sunrise-sunset.org/json?lat=54.409724&lng=18.634314") as url:
         data = json.loads(url.read())
         sunrise = data["results"]["sunrise"]
-        sunrise = sunrise[0:len(sunrise)-6]
+        sunrise = sunrise[0:len(sunrise) - 6]
         sunset = data["results"]["sunset"]
-        sunset = sunset[0:len(sunset)-6]
+        sunset = sunset[0:len(sunset) - 6]
 
         # add 12h and utc to sunset format
         if sunset[1] == ':':
@@ -106,6 +115,7 @@ def get_sunset_sunrise():
 
     return sunrise, sunset
 
+
 def get_utc_difference():
     return time.localtime().tm_hour - time.gmtime().tm_hour
 
@@ -113,26 +123,41 @@ def get_utc_difference():
 def get_forecast():
     # https://worldweather.wmo.int/pl/json/25_pl.xml
 
-    headline = "Chmury i słońce"
-    minTemp = 4
-    maxTemp = 11
-    info = "Chmury i słońce"
+    with open("data/forecast_daily.json") as file:
+        data = json.load(file)
+
+    # check if data for todays forecast was already downloaded
+    date_of_download = data["DailyForecasts"][0]["Date"][:10]
+    todays_date = f"{datetime.today()}"[:10]
+
+    if date_of_download != todays_date:
+        print("Pobieranie nowego pliku!")
+        # forecast data is outdated
+        with urllib.request.urlopen(
+                "http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
+                "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+            data = json.loads(url.read())
+            with open("data/forecast_daily.json", "w") as new_forecast:
+                json.dump(data, new_forecast)
+
+
+    headline = data["Headline"]["Text"]
+    minTemp = round(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
+    maxTemp = round(data["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"])
+    info = data["DailyForecasts"][0]["Day"]["LongPhrase"]
     rain = False
     wind = 30
     air = "Dobre"
 
+    # if true_forecast:
+    #     with urllib.request.urlopen("https://worldweather.wmo.int/pl/json/25_pl.xml") as url:
+    #         data = json.loads(url.read())
+    #         weather = data["city"]["forecast"]["forecastDay"][0]
+    #         minTemp = weather["minTemp"]
+    #         maxTemp = weather["maxTemp"]
+    #         info = weather["weather"]
 
-    if true_forecast:
-        with urllib.request.urlopen("https://worldweather.wmo.int/pl/json/25_pl.xml") as url:
-            data = json.loads(url.read())
-            weather = data["city"]["forecast"]["forecastDay"][0]
-            minTemp = weather["minTemp"]
-            maxTemp = weather["maxTemp"]
-            info = weather["weather"]
-
+    #TODO ustalić jakie zmienne będą zwracane
 
     return headline, minTemp, maxTemp, info, rain, wind, air
-
-
-
 
