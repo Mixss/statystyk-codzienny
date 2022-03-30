@@ -3,6 +3,7 @@ from datetime import date, datetime
 from discord.ext import commands, tasks
 
 import stats
+import bot_config
 intents = discord.Intents().all()
 
 client = commands.Bot(command_prefix='s!', intents=intents)
@@ -28,6 +29,7 @@ async def channel(ctx, arg1):
         await send_message(f"Statystyk jest ustawiony na ten kanał")
     elif arg1 == "set":
         await ctx.send("Ten kanał został ustawiony jako domyślny.")
+        bot_config.set_default_channel(ctx.message.guild.id, ctx.message.channel.id)
     else:
         await ctx.send("Nie poprawna komenda, użyj: s!help channel")
 
