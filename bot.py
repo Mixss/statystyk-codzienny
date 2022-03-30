@@ -13,13 +13,23 @@ async def on_ready():
     send_stats.start()
 
 
-@client.command()
+@client.command(brief="- ends general information about this day")
 async def stat(ctx):
     await ctx.send(stats.get_final_respond())
 
-@client.command()
+@client.command(brief="- says chuj")
 async def chuj(ctx):
     await ctx.send("chuj")
+
+@client.command()
+async def channel(ctx, arg1):
+
+    if arg1 == "test":
+        await send_message(f"Statystyk jest ustawiony na ten kanał")
+    elif arg1 == "set":
+        await ctx.send("Ten kanał został ustawiony jako domyślny.")
+    else:
+        await ctx.send("Nie poprawna komenda, użyj: s!help channel")
 
 async def send_message(message):
     channel = client.get_channel(958119472793780304) # kanał esovisco
