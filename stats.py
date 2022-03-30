@@ -162,7 +162,7 @@ def get_hourly_forecast():
 def get_current_weather():
     with urllib.request.urlopen("https://danepubliczne.imgw.pl/api/data/synop/station/gdansk") as url:
         data = json.loads(url.read())
-    time_of_measurement = data["godzina_pomiaru"] + get_utc_difference()
+    time_of_measurement = int(data["godzina_pomiaru"]) + get_utc_difference()
     temperature = round(float(data["temperatura"]))
     wind_speed = data["predkosc_wiatru"]
     fall = data["suma_opadu"]
@@ -188,5 +188,5 @@ def get_currencies():
     return euro, usd
 
 
-
+print(get_current_weather())
 
