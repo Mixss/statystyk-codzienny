@@ -197,5 +197,3 @@ def get_hourly_forecast():
         result[hour] = [temperature, icon_nr, wind_speed, wind_direction]
 
     return result
-
-print(get_sunset_sunrise())
