@@ -67,7 +67,7 @@ def get_day_of_week():
 
 def get_final_respond():
     sr, ss = get_sunset_sunrise()
-    forecastText, minTemp, maxTemp, forecastInfo, raining, wind, air = get_forecast()
+    forecastText, minTemp, maxTemp, forecastInfo, raining, wind, air = get_daily_forecast()
     rain_info = ""
     if raining:
         rain_info = "\n*Możliwe opady atmosferyczne*"
@@ -119,27 +119,50 @@ def get_sunset_sunrise():
 def get_utc_difference():
     return time.localtime().tm_hour - time.gmtime().tm_hour
 
+def download_forecast(type='daily'):
+    if type == 'daily':
+        with open("data/forecast_daily.json") as file:
+            data = json.load(file)
+        date_of_download = data["DailyForecasts"][0]["Date"][:10]
+        todays_date = f"{datetime.today()}"[:10]
 
-def get_forecast():
-    # https://worldweather.wmo.int/pl/json/25_pl.xml
+        if date_of_download != todays_date:
+            # forecast data is outdated
+            print("Downloading new file: forecast_daily.json")
 
-    with open("data/forecast_daily.json") as file:
-        data = json.load(file)
+            with urllib.request.urlopen(
+                    "http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
+                    "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+                data = json.loads(url.read())
+                with open("data/forecast_daily.json", "w") as new_forecast:
+                    json.dump(data, new_forecast)
 
-    # check if data for todays forecast was already downloaded
-    date_of_download = data["DailyForecasts"][0]["Date"][:10]
-    todays_date = f"{datetime.today()}"[:10]
+        return data
+    if type == 'hourly':
+        with open("data/forecast_12_hours.json") as file:
+            data = json.load(file)
+        date_of_download = data[0]["DateTime"][:10]
+        todays_date = f"{datetime.today()}"[:10]
 
-    if date_of_download != todays_date:
-        print("Pobieranie nowego pliku!")
-        # forecast data is outdated
-        with urllib.request.urlopen(
-                "http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
-                "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
-            data = json.loads(url.read())
-            with open("data/forecast_daily.json", "w") as new_forecast:
-                json.dump(data, new_forecast)
+        if date_of_download != todays_date:
+            # forecast data is outdated
+            print("Downloading new file: forecast_12_hours.json")
 
+            with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/275174?apikey=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+                data = json.loads(url.read())
+                with open("data/forecast_12_hours.json", "w") as new_forecast:
+                    json.dump(data, new_forecast)
+
+        return data
+
+
+
+    return []
+
+
+def get_daily_forecast():
+
+    data = download_forecast(type='daily')
 
     headline = data["Headline"]["Text"]
     minTemp = round(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
@@ -149,15 +172,25 @@ def get_forecast():
     wind = 30
     air = "Dobre"
 
-    # if true_forecast:
-    #     with urllib.request.urlopen("https://worldweather.wmo.int/pl/json/25_pl.xml") as url:
-    #         data = json.loads(url.read())
-    #         weather = data["city"]["forecast"]["forecastDay"][0]
-    #         minTemp = weather["minTemp"]
-    #         maxTemp = weather["maxTemp"]
-    #         info = weather["weather"]
 
     #TODO ustalić jakie zmienne będą zwracane
 
     return headline, minTemp, maxTemp, info, rain, wind, air
 
+def get_hourly_forecast():
+    data = download_forecast(type='hourly')
+
+    result = {}
+
+    for one_hour in data:
+        hour = one_hour["DateTime"][11:13]
+        temperature = round(one_hour["Temperature"]["Value"])
+        icon_nr = one_hour["WeatherIcon"]
+        wind_speed = one_hour["Wind"]["Speed"]["Value"]
+        wind_direction = one_hour["Wind"]["Direction"]["Degrees"]
+
+        result[hour] = [temperature, icon_nr, wind_speed, wind_direction]
+
+    return result
+
+print(get_hourly_forecast())
