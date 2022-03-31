@@ -1,7 +1,7 @@
 import csv
 import math
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import urllib.request, json
 import http.client
 
@@ -181,12 +181,26 @@ def get_currencies():
         euro = round(data_euro["rates"][0]["mid"], 2)
         usd = round(data_usd["rates"][0]["mid"], 2)
     except:
-        euro = 4.50
-        usd = 4.00
+        yesterday = datetime.today() - timedelta(days=1)
+        date_string = yesterday.strftime("%Y-%m-%d")
+        link_eur = f"https://api.nbp.pl/api/exchangerates/rates/a/eur/{date_string}?format=json"
+        link_usd = f"https://api.nbp.pl/api/exchangerates/rates/a/usd/{date_string}?format=json"
+        try:
+            with urllib.request.urlopen(link_eur) as url:
+                data_euro = json.loads(url.read())
+            with urllib.request.urlopen(link_usd) as url:
+                data_usd = json.loads(url.read())
+            euro = round(data_euro["rates"][0]["mid"], 2)
+            usd = round(data_usd["rates"][0]["mid"], 2)
+        except:
+            euro = 1.0
+            usd = 1.0
 
+    euro = "{:.2f}".format(euro)
+    usd = "{:.2f}".format(usd)
 
     return euro, usd
 
 
-print(get_current_weather())
+
 
