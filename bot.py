@@ -1,6 +1,10 @@
 import discord
 from datetime import date, datetime
+
 from discord.ext import commands, tasks
+from discord.ui import Button, View
+#
+# from asyncio import TimeoutError
 
 import stats
 import bot_config as bc
@@ -17,17 +21,43 @@ async def on_ready():
     print("Bot started successfully")
     send_stats.start()
 
+@client.command()
+async def button(ctx):
+    button1 = Button(label="dupa", style=discord.ButtonStyle.green)
+    button2 = Button(label="cipa", style=discord.ButtonStyle.grey)
+
+    async def button_callback1(interaction):
+        await interaction.response.send_message(f"{interaction.user.mention} chuj ci w dupe")
+
+    async def button_callback2(interaction):
+        await interaction.response.send_message(f"{interaction.user.mention} dobrze")
+
+    button1.callback = button_callback1
+    button2.callback = button_callback2
+
+    view = View()
+    view.add_item(button1)
+    view.add_item(button2)
+    await ctx.send("dupa", view=view)
+
+
 
 @client.command(brief="- wysyła ogólne informacje o dzisiejszym dniu",
                 description="Wysyła informacje na temat dzisiejszego dnia.\n"
                             "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
-async def stat(ctx):
+async def stats(ctx):
     await ctx.send(bc.get_daily_stats_message())
+    with open("generated_images/image.png", 'rb') as f:
+        picture = discord.File(f)
+        await ctx.send(file=picture)
 
 
 @client.command(brief="- says chuj")
 async def chuj(ctx):
     await ctx.send("chuj")
+    with open("generated_images/image.png", 'rb') as f:
+        picture = discord.File(f)
+        await ctx.send(file=picture)
 
 
 @client.command(brief="- zarządzanie domyślnym kanałem",
@@ -89,7 +119,7 @@ async def send_stats():
     now = datetime.now()
     hour = now.hour
     minute = now.minute
-    if 6 - stats.get_utc_difference() <= hour < 7 - stats.get_utc_difference():
+    if 6  <= hour < 7 :
         if 15 <= minute < 45:
             print(f"{hour}:{minute} -> wysyłam pobranne statystyki")
             await broadcast_message(bc.get_daily_stats_message())
