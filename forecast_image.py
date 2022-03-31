@@ -10,6 +10,7 @@ LINE_COLOR = (131, 128, 126)
 
 TEXT_TOP_OFFSET = 30
 TEMP_TOP_OFFSET = 50
+ICON_TOP_OFFSET = 100
 
 HOUR_VERT_OFFSET = 400
 
@@ -62,8 +63,75 @@ def draw_temperatures(img, color, text_scale):
     return np.array(image_pil)
 
 
+def overlay_image(large_image, small_image, x_offset, y_offset):
+    y1, y2 = y_offset, y_offset + small_image.shape[0]
+    x1, x2 = x_offset, x_offset + small_image.shape[1]
+
+    alpha_small = small_image[:, :, 3] / 255.0
+    alpha_large = 1.0 - alpha_small
+
+    for c in range(0, 3):
+        large_image[y1:y2, x1:x2, c] = (alpha_small * small_image[:, :, c] + alpha_large * large_image[y1:y2, x1:x2, c])
+
+
+def icon_file_lookup(icon_number):
+    if icon_number == 1 or icon_number == 2 or icon_number == 4 or icon_number == 30:
+        return "./icons/1,2,4,30.png"
+    if icon_number == 3 or icon_number == 6 or icon_number == 20:
+        return "./icons/3,6,20.png"
+    if icon_number == 5:
+        return "./icons/5.png"
+    if icon_number == 7 or icon_number == 8 or icon_number == 19 or icon_number == 38:
+        return "./icons/7,8,19,38.png"
+    if icon_number == 11:
+        return "./icons/11.png"
+    if icon_number == 12 or icon_number == 18:
+        return "./icons/12,18.png"
+    if icon_number == 13 or icon_number == 14:
+        return "./icons/13,14.png"
+    if icon_number == 15 or icon_number == 16 or icon_number == 17:
+        return "./icons/15,16,17.png"
+    if icon_number == 21:
+        return "./icons/21.png"
+    if icon_number == 22 or icon_number == 23 or icon_number == 24 or icon_number == 25\
+            or icon_number == 26 or icon_number == 29 or icon_number == 31:
+        return "./icons/22,23,24,25,26,29,31.png"
+    if icon_number == 32:
+        return "./icons/32.png"
+    if icon_number == 33 or icon_number == 34:
+        return "./icons/33,34.png"
+    if icon_number == 35:
+        return "./icons/35.png"
+    if icon_number == 36:
+        return "./icons/36.png"
+    if icon_number == 37:
+        return "./icons/37.png"
+    if icon_number == 39 or icon_number == 40:
+        return "./icons/39,40.png"
+    if icon_number == 41 or icon_number == 42:
+        return "./icons/41,42.png"
+    if icon_number == 43:
+        return "./icons/43.png"
+    if icon_number == 44:
+        return "./icons/43.png"
+
+
 def draw_icons():
-    
+    icons = [1, 3, 7, 12, 35, 41]
+
+    lines = create_lines()[:-1]
+    lines += lines
+
+    for (line_x, icon) in zip(lines, icons):
+        icon_image = cv.imread(icon_file_lookup(icon), -1)
+
+        resized_icon_image = cv.resize(icon_image, (SPACE_BETWEEN_LINES - 140, SPACE_BETWEEN_LINES - 140), interpolation=cv.INTER_AREA)
+
+        if icons.index(icon) < 3:
+            overlay_image(image, resized_icon_image, line_x, ICON_TOP_OFFSET)
+        else:
+            overlay_image(image, resized_icon_image, line_x, ICON_TOP_OFFSET + HOUR_VERT_OFFSET)
+
 
 def draw_text(color, text_scale):
     hours = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00"]
@@ -99,6 +167,7 @@ image = np.full((image_height, image_width, channels), color, dtype=np.uint8)
 draw_lines()
 draw_text((191, 188, 186), 0.9)
 image = draw_temperatures(image, (221, 218, 216), 1.2)
+draw_icons()
 
 cv.imshow('image', image)
 cv.waitKey(0)
