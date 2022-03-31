@@ -9,8 +9,8 @@ LINE_OFFSET_LEFT = 8
 LINE_COLOR = (131, 128, 126)
 
 TEXT_TOP_OFFSET = 30
-TEMP_TOP_OFFSET = 50
-ICON_TOP_OFFSET = 100
+TEMP_TOP_OFFSET = 30
+ICON_TOP_OFFSET = 110
 
 HOUR_VERT_OFFSET = 400
 
@@ -127,10 +127,14 @@ def draw_icons():
 
         resized_icon_image = cv.resize(icon_image, (SPACE_BETWEEN_LINES - 140, SPACE_BETWEEN_LINES - 140), interpolation=cv.INTER_AREA)
 
+        center_x = line_x + SPACE_BETWEEN_LINES / 2
+
+        icon_x = center_x - resized_icon_image.shape[0] / 2
+
         if icons.index(icon) < 3:
-            overlay_image(image, resized_icon_image, line_x, ICON_TOP_OFFSET)
+            overlay_image(image, resized_icon_image, int(icon_x), ICON_TOP_OFFSET)
         else:
-            overlay_image(image, resized_icon_image, line_x, ICON_TOP_OFFSET + HOUR_VERT_OFFSET)
+            overlay_image(image, resized_icon_image, int(icon_x), ICON_TOP_OFFSET + HOUR_VERT_OFFSET)
 
 
 def draw_text(color, text_scale):
