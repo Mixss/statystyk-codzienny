@@ -227,7 +227,8 @@ def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
 
             text_y = text_size[1] / 2 + WIND_SPEED_TOP_OFFSET
 
-            overlay_image(image, rotated_arrow_image, int(text_x - 35), int(text_y - rotated_arrow_image.shape[1] / 2 - 20))
+            overlay_image(image, rotated_arrow_image, int(text_x - 35),
+                          int(text_y - rotated_arrow_image.shape[1] / 2 - 20))
         else:
             cv.putText(image, str(speed), (int(text_x) + WIND_SPEED_LEFT_OFFSET, WIND_SPEED_TOP_OFFSET +
                                            HOUR_VERT_OFFSET), font, text_scale, color, 1, bottomLeftOrigin=False,
@@ -235,7 +236,8 @@ def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
 
             text_y = text_size[1] / 2 + WIND_SPEED_TOP_OFFSET + HOUR_VERT_OFFSET
 
-            overlay_image(image, rotated_arrow_image, int(text_x - 35), int(text_y - rotated_arrow_image.shape[1] / 2 - 20))
+            overlay_image(image, rotated_arrow_image, int(text_x - 35),
+                          int(text_y - rotated_arrow_image.shape[1] / 2 - 20))
         counter += 1
 
 
@@ -264,4 +266,3 @@ def generate_forecast_image():
 
 
 generate_forecast_image()
-
