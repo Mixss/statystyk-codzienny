@@ -21,6 +21,7 @@ async def on_ready():
     print("Bot started successfully")
     send_stats.start()
 
+
 @client.command()
 async def button(ctx):
     button1 = Button(label="dupa", style=discord.ButtonStyle.green)
@@ -41,15 +42,14 @@ async def button(ctx):
     await ctx.send("dupa", view=view)
 
 
-
 @client.command(brief="- wysyła ogólne informacje o dzisiejszym dniu",
                 description="Wysyła informacje na temat dzisiejszego dnia.\n"
                             "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
 async def stats(ctx):
     await ctx.send(bc.get_daily_stats_message())
-    # with open("generated_images/image.png", 'rb') as f:
-    #     picture = discord.File(f)
-    #     await ctx.send(file=picture)
+    with open("generated_images/image.png", 'rb') as f:
+        picture = discord.File(f)
+        await ctx.send(file=picture)
 
 
 @client.command(brief="- says chuj")
@@ -94,6 +94,24 @@ async def weather(ctx):
     await ctx.send(bc.get_current_weather_message())
 
 
+@client.command(brief="- wyświetla najważniejsze terminy", description="Wyświetla terminy najbliższych kolokwiów, "
+                                                                       "terminy oddania projektów")
+async def terminy(ctx, *args):
+    if len(args) == 1:
+        try:
+            num_of_deadlines = int(args[0])
+
+            if num_of_deadlines <= 0:
+                await ctx.send("Niepoprawny argument, podaj liczbę większą od zera")
+            else:
+                await ctx.send(bc.get_deadlines_message(num_of_deadlines))
+        except ValueError:
+            await ctx.send("Niepoprawny argument, użyj: `s!help channel`")
+    else:
+        await ctx.send(bc.get_deadlines_message(5))
+
+
+
 # sends the same message to the channels defined i the file data/config.json
 # to add a channel to the config run 'channel set' command on the channel
 async def broadcast_message(message):
@@ -119,7 +137,7 @@ async def send_stats():
     now = datetime.now()
     hour = now.hour
     minute = now.minute
-    if 4  <= hour < 5 :
+    if 4 <= hour < 5:
         if 15 <= minute < 45:
             print(f"{hour}:{minute} -> wysyłam pobrane statystyki")
             await broadcast_message(bc.get_daily_stats_message())

@@ -33,7 +33,7 @@ def get_today():
 
 def get_imieniny_list():
     imieniny = {}
-    with open("data/imieniny.csv") as file_imieniny:
+    with open("data/imieniny.csv", encoding="utf-8") as file_imieniny:
         csv_reader = csv.reader(file_imieniny, delimiter=',')
         line_count = 0
         for row in csv_reader:
@@ -204,3 +204,31 @@ def get_currencies():
     usd = "{:.2f}".format(usd)
 
     return euro, usd
+
+
+def get_deadlines():
+    courses = []
+    dates = []
+    descriptions = []
+
+    with open("./deadlines/exams.csv", encoding="utf-8") as file_exams_deadlines:
+        csv_reader = csv.reader(file_exams_deadlines, delimiter=';')
+        for row in csv_reader:
+            courses.append(row[0])
+            dates.append(row[1])
+            descriptions.append(row[2])
+
+    with open("./deadlines/projects.csv", encoding="utf-8") as file_projects_deadlines:
+        csv_reader = csv.reader(file_projects_deadlines, delimiter=';')
+        for row in csv_reader:
+            courses.append(row[0])
+            dates.append(row[1])
+            descriptions.append(row[2])
+
+    days = list(map(lambda x: x.split(' ')[2], dates))
+
+    to_sort = list(zip(days, courses, dates, descriptions))
+    to_sort.sort()
+    days, courses, dates, descriptions = zip(*to_sort)
+
+    return courses, dates, descriptions

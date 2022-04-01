@@ -1,0 +1,3 @@
+SMAC;18:00 piątek 08.04.2022;egzamin zdalny, czas trwania ok. 30 min, pytania ABCD
+PT;17:00 wtorek 12.04.2022;kolokwium Java stacjonarnie AUD1P
+MPWI;18:00 poniedziałek 09.05.2022;kolokwium stacjonarne
