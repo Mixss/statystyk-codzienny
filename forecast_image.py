@@ -245,7 +245,7 @@ draw_lines()
 draw_text((191, 188, 186), 1.0)
 image = draw_temperatures(image, (221, 218, 216), 86)
 draw_icons()
-draw_wind((191, 188, 186), 1.0)
+draw_wind((191, 188, 186), 1.3)
 
 cv.imshow('image', image)
 cv.waitKey(0)

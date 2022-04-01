@@ -47,9 +47,9 @@ async def button(ctx):
                             "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
 async def stats(ctx):
     await ctx.send(bc.get_daily_stats_message())
-    with open("generated_images/image.png", 'rb') as f:
-        picture = discord.File(f)
-        await ctx.send(file=picture)
+    # with open("generated_images/image.png", 'rb') as f:
+    #     picture = discord.File(f)
+    #     await ctx.send(file=picture)
 
 
 @client.command(brief="- says chuj")
@@ -119,7 +119,7 @@ async def send_stats():
     now = datetime.now()
     hour = now.hour
     minute = now.minute
-    if 6  <= hour < 7 :
+    if 4  <= hour < 5 :
         if 15 <= minute < 45:
-            print(f"{hour}:{minute} -> wysyłam pobranne statystyki")
+            print(f"{hour}:{minute} -> wysyłam pobrane statystyki")
             await broadcast_message(bc.get_daily_stats_message())

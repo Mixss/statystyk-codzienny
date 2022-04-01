@@ -65,7 +65,7 @@ def get_daily_stats_message():
               f"*{forecastInfo}* \n" \
               f"*Prawdopodobieństwo deszczu:*  **{raining}%** \n\n" \
               f":mask: Jakość powietrza: *{air}* \n" \
-              f":sunglasses: Index UV: **{uvidex}** (Zagrożenie: *{uvdanger}*) \n " \
+              f":sunglasses: Index UV: **{uvidex}** ({uvdanger}) \n " \
               f" \n" \
               f":moneybag: Finanse: \n" \
               f":euro: 1 EUR = **{euro}** PLN\n" \

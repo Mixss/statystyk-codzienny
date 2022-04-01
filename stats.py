@@ -16,15 +16,16 @@ days_of_week = {
 }
 
 moon_phases = {
-    "NewMoon": ":new_moon:",
+    "New": ":new_moon:",
     "WaningCrescent": ":waning_crescent_moon:",
     "ThirdQuarter": ":last_quarter_moon:",
     "WaningGibbous": ":waning_gibbous_moon:",
-    "FullMoon": ":full_moon:",
+    "Full": ":full_moon:",
     "WaxingGibbous": ":waxing_gibbous_moon:",
     "FirstQuarter": ":first_quarter_moon:",
     "WaxingCrescent": ":waxing_crescent_moon:"
 }
+
 
 def get_today():
     return date.today().strftime("%d.%m")
@@ -138,7 +139,10 @@ def get_daily_forecast():
     air = data["DailyForecasts"][0]["AirAndPollen"][0]["Category"]
     uvindex = data["DailyForecasts"][0]["AirAndPollen"][5]["Value"]
     uvdanger = data["DailyForecasts"][0]["AirAndPollen"][5]["Category"]
-    moon = moon_phases[data["DailyForecasts"][0]["Moon"]["Phase"]]
+    try:
+        moon = moon_phases[data["DailyForecasts"][0]["Moon"]["Phase"]]
+    except KeyError:
+        moon = data["DailyForecasts"][0]["Moon"]["Phase"]
 
     return headline, minTemp, maxTemp, info, rain, air, uvindex, uvdanger, moon
 
@@ -159,6 +163,7 @@ def get_hourly_forecast():
 
     return result
 
+
 def get_current_weather():
     with urllib.request.urlopen("https://danepubliczne.imgw.pl/api/data/synop/station/gdansk") as url:
         data = json.loads(url.read())
@@ -172,7 +177,6 @@ def get_current_weather():
 
 
 def get_currencies():
-
     try:
         with urllib.request.urlopen("https://api.nbp.pl/api/exchangerates/rates/a/eur/today?format=json") as url:
             data_euro = json.loads(url.read())
@@ -200,7 +204,3 @@ def get_currencies():
     usd = "{:.2f}".format(usd)
 
     return euro, usd
-
-
-
-
