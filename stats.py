@@ -150,18 +150,29 @@ def get_daily_forecast():
 def get_hourly_forecast():
     data = download_forecast(type='hourly')
 
+    hours = []
+    temperatures = []
+    icons = []
+    wind_speeds = []
+    wind_directions = []
+
+    for one_hour in data:
+        hours.append(one_hour["DateTime"][11:13])
+        temperatures.append(round(one_hour["Temperature"]["Value"]))
+        icons.append(one_hour["WeatherIcon"])
+        wind_speeds.append(one_hour["Wind"]["Speed"]["Value"])
+        wind_directions.append(one_hour["Wind"]["Direction"]["Degrees"])
+
+    return hours, temperatures, icons, wind_speeds, wind_directions
+
+
+def get_advanced_hourly_forecast():
+    data = download_forecast(type='hourly')
+
     result = {}
 
     for one_hour in data:
-        hour = one_hour["DateTime"][11:13]
-        temperature = round(one_hour["Temperature"]["Value"])
-        icon_nr = one_hour["WeatherIcon"]
-        wind_speed = one_hour["Wind"]["Speed"]["Value"]
-        wind_direction = one_hour["Wind"]["Direction"]["Degrees"]
-
-        result[hour] = [temperature, icon_nr, wind_speed, wind_direction]
-
-    return result
+        pass
 
 
 def get_current_weather():
