@@ -97,7 +97,7 @@ async def weather(ctx):
 @client.command(brief="- wyświetla najważniejsze terminy", description="Wyświetla terminy najbliższych kolokwiów, "
                                                                        "terminy oddania projektów")
 async def terminy(ctx, *args):
-    if len(args) == 1:
+    if len(args) >= 1:
         try:
             num_of_deadlines = int(args[0])
 

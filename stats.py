@@ -225,10 +225,11 @@ def get_deadlines():
             dates.append(row[1])
             descriptions.append(row[2])
 
-    days = list(map(lambda x: x.split(' ')[2], dates))
+    months = list(map(lambda x: x.split(' ')[2].split('.')[1], dates))
+    days = list(map(lambda x: x.split(' ')[2].split('.')[0], dates))
 
-    to_sort = list(zip(days, courses, dates, descriptions))
+    to_sort = list(zip(months, days, courses, dates, descriptions))
     to_sort.sort()
-    days, courses, dates, descriptions = zip(*to_sort)
+    months, days, courses, dates, descriptions = zip(*to_sort)
 
     return courses, dates, descriptions
