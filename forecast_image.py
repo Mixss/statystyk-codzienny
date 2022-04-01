@@ -1,8 +1,13 @@
-import matplotlib as mp
 import numpy as np
 import cv2 as cv
 from PIL import ImageFont, ImageDraw, Image
 import math
+
+from stats import get_hourly_forecast
+
+IMAGE_WIDTH = 1000
+IMAGE_HEIGHT = 800
+MAIN_BACKGROUND_COLOR = (63, 57, 54)
 
 SPACE_BETWEEN_LINES = 326
 LINE_OFFSET_LEFT = 8
@@ -30,11 +35,11 @@ def create_lines():
     return vertical_lines
 
 
-def draw_lines():
+def draw_lines(image):
     vertical_lines = create_lines()
 
     for x_coord in vertical_lines:
-        cv.line(image, (x_coord, 5), (x_coord, image_height - 5), LINE_COLOR, 1)
+        cv.line(image, (x_coord, 5), (x_coord, IMAGE_HEIGHT - 5), LINE_COLOR, 1)
 
 
 def overlay_image(large_image, small_image, x_offset, y_offset):
@@ -55,13 +60,13 @@ def rotate_image(image, angle):
     return result
 
 
-def rotation(image, angleInDegrees):
+def rotation(image, angle_in_degrees):
     h, w = image.shape[:2]
     img_c = (w / 2, h / 2)
 
-    rot = cv.getRotationMatrix2D(img_c, angleInDegrees, 1)
+    rot = cv.getRotationMatrix2D(img_c, angle_in_degrees, 1)
 
-    rad = math.radians(angleInDegrees)
+    rad = math.radians(angle_in_degrees)
     sin = math.sin(rad)
     cos = math.cos(rad)
     b_w = int((h * abs(sin)) + (w * abs(cos)))
@@ -72,37 +77,6 @@ def rotation(image, angleInDegrees):
 
     out_img = cv.warpAffine(image, rot, (b_w, b_h), flags=cv.INTER_LINEAR)
     return out_img
-
-
-def draw_temperatures(img, color, font_size):
-    temperatures = [3, 7, 18, 9, -3, 21]
-
-    font = cv.FONT_HERSHEY_DUPLEX
-
-    lines = create_lines()[:-1]
-
-    lines += lines
-
-    image_pil = Image.fromarray(img)
-    draw = ImageDraw.Draw(image_pil)
-
-    for line_x, temp in zip(lines, temperatures):
-
-        center_x = line_x + SPACE_BETWEEN_LINES / 2
-
-        unicode_font = ImageFont.truetype("./fonts/IBMPlexSansArabic-Light.ttf", font_size)
-
-        text_x = center_x - unicode_font.getsize(str(temp) + "°C")[0] / 2
-
-        if temperatures.index(temp) < 3:
-            draw.text((int(text_x), TEMP_TOP_OFFSET), str(temp) + "°C", font=unicode_font, fill=color)
-            # cv.putText(image, str(temp) + "°C", (int(text_x), TEMP_TOP_OFFSET), font, text_scale, color, 1, bottomLeftOrigin=False, lineType=cv.LINE_AA)
-        else:
-            draw.text((int(text_x), TEMP_TOP_OFFSET + HOUR_VERT_OFFSET), str(temp) + "°C", font=unicode_font,
-                      fill=color)
-            # cv.putText(image, str(temp) + "°C", (int(text_x), TEMP_TOP_OFFSET + HOUR_VERT_OFFSET), font, text_scale, color, 1, bottomLeftOrigin=False, lineType=cv.LINE_AA)
-
-    return np.array(image_pil)
 
 
 def icon_file_lookup(icon_number):
@@ -147,12 +121,38 @@ def icon_file_lookup(icon_number):
         return "./icons/43.png"
 
 
-def draw_icons():
-    icons = [1, 3, 7, 12, 35, 41]
+def draw_temperatures(image, temperatures, color, font_size):
+    unicode_font = ImageFont.truetype("./fonts/IBMPlexSansArabic-Light.ttf", font_size)
+
+    lines = create_lines()[:-1]
+
+    lines += lines
+
+    image_pil = Image.fromarray(image)
+    draw = ImageDraw.Draw(image_pil)
+
+    counter = 0
+    for line_x, temp in zip(lines, temperatures):
+
+        center_x = line_x + SPACE_BETWEEN_LINES / 2
+
+        text_x = center_x - unicode_font.getsize(str(temp) + "°C")[0] / 2
+
+        if counter < 3:
+            draw.text((int(text_x), TEMP_TOP_OFFSET), str(temp) + "°C", font=unicode_font, fill=color)
+        else:
+            draw.text((int(text_x), TEMP_TOP_OFFSET + HOUR_VERT_OFFSET), str(temp) + "°C", font=unicode_font,
+                      fill=color)
+        counter += 1
+    return np.array(image_pil)
+
+
+def draw_icons(image, icons):
 
     lines = create_lines()[:-1]
     lines += lines
 
+    counter = 0
     for (line_x, icon) in zip(lines, icons):
         icon_image = cv.imread(icon_file_lookup(icon), -1)
 
@@ -163,20 +163,26 @@ def draw_icons():
 
         icon_x = center_x - resized_icon_image.shape[0] / 2
 
-        if icons.index(icon) < 3:
+        if counter < 3:
             overlay_image(image, resized_icon_image, int(icon_x), ICON_TOP_OFFSET)
         else:
             overlay_image(image, resized_icon_image, int(icon_x), ICON_TOP_OFFSET + HOUR_VERT_OFFSET)
+        counter += 1
 
 
-def draw_text(color, text_scale):
-    hours = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00"]
+def draw_hours(image, hours, color, text_scale):
 
     font = cv.FONT_HERSHEY_DUPLEX
 
     lines = create_lines()[:-1]
 
     lines += lines
+
+    new_hour = []
+    for hour in hours:
+        new_hour.append(f"{hour}:00")
+
+    hours = new_hour
 
     for line_x, hour in zip(lines, hours):
         # center text
@@ -194,9 +200,7 @@ def draw_text(color, text_scale):
                        bottomLeftOrigin=False, lineType=cv.LINE_AA)
 
 
-def draw_wind(color, text_scale):
-    wind_directions = [0, 45, 90, 180, 243, 321]
-    wind_speeds = [32.1, 54.1, 3.1, 0.1, 45.2, 20.3]
+def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
 
     lines = create_lines()[:-1]
     lines += lines
@@ -207,6 +211,7 @@ def draw_wind(color, text_scale):
     resized_arrow_image = cv.resize(arrow_image, (int(arrow_image.shape[0] * 0.5), int(arrow_image.shape[1] * 0.5)),
                                     interpolation=cv.INTER_AREA)
 
+    counter = 0
     for line_x, direction, speed in zip(lines, wind_directions, wind_speeds):
         text_size = cv.getTextSize(str(speed), font, text_scale, 2)[0]
 
@@ -214,9 +219,9 @@ def draw_wind(color, text_scale):
 
         text_x = center_x - text_size[0] / 2
 
-        rotated_arrow_image = rotation(resized_arrow_image, direction)
+        rotated_arrow_image = rotation(resized_arrow_image, direction - 180)
 
-        if wind_speeds.index(speed) < 3:
+        if counter < 3:
             cv.putText(image, str(speed), (int(text_x) + WIND_SPEED_LEFT_OFFSET, WIND_SPEED_TOP_OFFSET), font,
                        text_scale, color, 1, bottomLeftOrigin=False, lineType=cv.LINE_AA)
 
@@ -231,23 +236,32 @@ def draw_wind(color, text_scale):
             text_y = text_size[1] / 2 + WIND_SPEED_TOP_OFFSET + HOUR_VERT_OFFSET
 
             overlay_image(image, rotated_arrow_image, int(text_x - 35), int(text_y - rotated_arrow_image.shape[1] / 2 - 20))
+        counter += 1
 
 
-image_width = 1000
-image_height = 800
-channels = 3
-# color = (59, 53, 50)  # discord darker color
-color = (63, 57, 54)
+# main function
+def generate_forecast_image():
+    hours, temperatures, icons, wind_speeds, wind_directions = get_hourly_forecast()
 
-image = np.full((image_height, image_width, channels), color, dtype=np.uint8)
+    image = np.full((IMAGE_HEIGHT, IMAGE_WIDTH, 3), MAIN_BACKGROUND_COLOR, dtype=np.uint8)
 
-draw_lines()
-draw_text((191, 188, 186), 1.0)
-image = draw_temperatures(image, (221, 218, 216), 86)
-draw_icons()
-draw_wind((191, 188, 186), 1.3)
+    wind_speeds = wind_speeds[::2]
+    wind_directions = wind_directions[::2]
+    hours = hours[::2]
+    temperatures = temperatures[::2]
+    icons = icons[::2]
 
-cv.imshow('image', image)
-cv.waitKey(0)
+    draw_lines(image)
+    draw_hours(image, hours, (191, 188, 186), 1.0)
+    image = draw_temperatures(image, temperatures, (221, 218, 216), 86)
+    draw_icons(image, icons)
+    draw_wind(image, wind_speeds, wind_directions, (191, 188, 186), 1.3)
 
-cv.imwrite("./generated_images/image.png", image)
+    cv.imshow('image', image)
+    cv.waitKey(0)
+
+    cv.imwrite("./generated_images/image.png", image)
+
+
+generate_forecast_image()
+
