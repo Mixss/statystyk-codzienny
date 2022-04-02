@@ -8,6 +8,7 @@ from discord.ui import Button, View
 
 import stats
 import bot_config as bc
+from forecast_image import generate_forecast_image
 
 intents = discord.Intents().all()
 
@@ -46,10 +47,52 @@ async def button(ctx):
                 description="Wysyła informacje na temat dzisiejszego dnia.\n"
                             "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
 async def stats(ctx):
+    generate_forecast_image()
     await ctx.send(bc.get_daily_stats_message())
+
+    button_main = Button(label='Strona główna', style=discord.ButtonStyle.red, custom_id='btnmain')
+    button_forecast = Button(label='Rozszerzona pogoda', style=discord.ButtonStyle.blurple, custom_id='btnforecast')
+    button_finances = Button(label='Finanse', style=discord.ButtonStyle.grey, custom_id='btnfinances')
+    button_deadlines = Button(label='Terminy', style=discord.ButtonStyle.green, custom_id='btndeadlines')
+
+    async def button_main_callback(interaction):
+        await interaction.response.send_message(f"tu bedzie pogoda")
+    button_main.callback = button_main_callback
+
+    async def button_forecast_callback(interaction):
+        await interaction.response.send_message(f"tu bedzie pogoda")
+    button_forecast.callback = button_forecast_callback
+
+    async def button_finances_callback(interaction):
+        await interaction.response.send_message(f"tu beda finanse")
+    button_finances.callback = button_finances_callback
+
+    async def button_deadlines_callback(interaction):
+        last_message = await ctx.fetch_message(ctx.channel.last_message_id)
+        await last_message.delete(delay=0.3)
+
+        await ctx.send(bc.get_deadlines_message())
+
+
+        #button_return = Button(label='Powrót', style=discord.ButtonStyle.grey, custom_id='btnreturn')
+
+
+        #last_message = await ctx.fetch_message(ctx.channel.last_message_id)
+
+
+
+
+    button_deadlines.callback = button_deadlines_callback
+
+    view = View()
+    view.add_item(button_main)
+    view.add_item(button_forecast)
+    view.add_item(button_finances)
+    view.add_item(button_deadlines)
+
     with open("generated_images/image.png", 'rb') as f:
         picture = discord.File(f)
-        await ctx.send(file=picture)
+        await ctx.send(file=picture, view=view)
 
 
 @client.command(brief="- says chuj")
@@ -108,7 +151,7 @@ async def terminy(ctx, *args):
         except ValueError:
             await ctx.send("Niepoprawny argument, użyj: `s!help channel`")
     else:
-        await ctx.send(bc.get_deadlines_message(5))
+        await ctx.send(bc.get_deadlines_message())
 
 
 

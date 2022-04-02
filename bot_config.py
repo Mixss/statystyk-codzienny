@@ -90,7 +90,7 @@ def get_current_weather_message():
     return message
 
 
-def get_deadlines_message(number_of_deadlines):
+def get_deadlines_message(number_of_deadlines=5):
     courses, dates, descriptions = get_deadlines()
 
     text = ""

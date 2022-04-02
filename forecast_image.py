@@ -259,9 +259,6 @@ def generate_forecast_image():
     draw_icons(image, icons)
     draw_wind(image, wind_speeds, wind_directions, (191, 188, 186), 1.3)
 
-    cv.imshow('image', image)
-    cv.waitKey(0)
-
     cv.imwrite("./generated_images/image.png", image)
 
 
