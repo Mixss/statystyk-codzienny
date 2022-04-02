@@ -50,13 +50,21 @@ async def stats(ctx):
     generate_forecast_image()
     await ctx.send(bc.get_daily_stats_message())
 
+    last_viewed_menu = 'main'  # other values: forecast, finances, deadlines
+
     button_main = Button(label='Strona główna', style=discord.ButtonStyle.red, custom_id='btnmain')
-    button_forecast = Button(label='Rozszerzona pogoda', style=discord.ButtonStyle.blurple, custom_id='btnforecast')
-    button_finances = Button(label='Finanse', style=discord.ButtonStyle.grey, custom_id='btnfinances')
-    button_deadlines = Button(label='Terminy', style=discord.ButtonStyle.green, custom_id='btndeadlines')
+    button_forecast = Button(label='Rozszerzona pogoda', style=discord.ButtonStyle.green, custom_id='btnforecast')
+    button_finances = Button(label='Finanse', style=discord.ButtonStyle.blurple, custom_id='btnfinances')
+    button_deadlines = Button(label='Terminy', style=discord.ButtonStyle.blurple, custom_id='btndeadlines')
 
     async def button_main_callback(interaction):
-        await interaction.response.send_message(f"tu bedzie pogoda")
+        await clear_previous_message()
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'main'
+        await ctx.send(bc.get_daily_stats_message())
+        with open("generated_images/image.png", 'rb') as file:
+            pict = discord.File(file)
+            await ctx.send(file=pict, view=view)
     button_main.callback = button_main_callback
 
     async def button_forecast_callback(interaction):
@@ -68,21 +76,28 @@ async def stats(ctx):
     button_finances.callback = button_finances_callback
 
     async def button_deadlines_callback(interaction):
-        last_message = await ctx.fetch_message(ctx.channel.last_message_id)
-        await last_message.delete(delay=0.3)
-
-        await ctx.send(bc.get_deadlines_message())
-
-
-        #button_return = Button(label='Powrót', style=discord.ButtonStyle.grey, custom_id='btnreturn')
-
-
-        #last_message = await ctx.fetch_message(ctx.channel.last_message_id)
-
-
-
-
+        await clear_previous_message()
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'deadlines'
+        await ctx.send(bc.get_deadlines_message(), view=view)
     button_deadlines.callback = button_deadlines_callback
+
+    async def clear_previous_message():
+        if last_viewed_menu == 'main':
+            to_delete = []
+            counter = 0
+            async for message in ctx.channel.history(limit=100):
+                if message.author == client.user:
+                    counter += 1
+                to_delete.append(message)
+                if counter == 2:
+                    break
+
+            for message in to_delete:
+                await message.delete()
+        else:
+            last_message = await ctx.fetch_message(ctx.channel.last_message_id)
+            await last_message.delete()
 
     view = View()
     view.add_item(button_main)
