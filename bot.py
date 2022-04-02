@@ -57,7 +57,7 @@ async def stats(ctx):
     button_finances = Button(label='Finanse', style=discord.ButtonStyle.blurple, custom_id='btnfinances')
     button_deadlines = Button(label='Terminy', style=discord.ButtonStyle.blurple, custom_id='btndeadlines')
 
-    async def button_main_callback():
+    async def button_main_callback(interaction):
         nonlocal last_sent_message
         if last_sent_message is not None:
             await clear_previous_message(last_sent_message)
@@ -71,14 +71,24 @@ async def stats(ctx):
     button_main.callback = button_main_callback
 
     async def button_forecast_callback(interaction):
-        await interaction.response.send_message(f"tu bedzie pogoda")
+        nonlocal last_sent_message
+        await clear_previous_message(last_sent_message)
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'forecast'
+        await ctx.send(f"tu będzie pogoda\n", view=view)
+        last_sent_message = ctx.channel.last_message_id
     button_forecast.callback = button_forecast_callback
 
     async def button_finances_callback(interaction):
-        await interaction.response.send_message(f"tu beda finanse")
+        nonlocal last_sent_message
+        await clear_previous_message(last_sent_message)
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'deadlines'
+        await ctx.send(f"tu będą finanse\n", view=view)
+        last_sent_message = ctx.channel.last_message_id
     button_finances.callback = button_finances_callback
 
-    async def button_deadlines_callback():
+    async def button_deadlines_callback(interaction):
         nonlocal last_sent_message
         await clear_previous_message(last_sent_message)
         nonlocal last_viewed_menu
