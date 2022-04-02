@@ -8,6 +8,7 @@ from discord.ui import Button, View
 
 import stats
 import bot_config as bc
+from forecast_image import generate_forecast_image
 
 intents = discord.Intents().all()
 
@@ -46,10 +47,87 @@ async def button(ctx):
                 description="Wysyła informacje na temat dzisiejszego dnia.\n"
                             "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
 async def stats(ctx):
+    generate_forecast_image()
     await ctx.send(bc.get_daily_stats_message())
+
+    last_viewed_menu = 'main'  # other values: forecast, finances, deadlines
+
+    button_main = Button(label='Strona główna', style=discord.ButtonStyle.red, custom_id='btnmain')
+    button_forecast = Button(label='Rozszerzona pogoda', style=discord.ButtonStyle.green, custom_id='btnforecast')
+    button_finances = Button(label='Finanse', style=discord.ButtonStyle.blurple, custom_id='btnfinances')
+    button_deadlines = Button(label='Terminy', style=discord.ButtonStyle.blurple, custom_id='btndeadlines')
+
+    async def button_main_callback(interaction):
+        nonlocal last_sent_message
+        if last_sent_message is not None:
+            await clear_previous_message(last_sent_message)
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'main'
+        await ctx.send(bc.get_daily_stats_message())
+        with open("generated_images/image.png", 'rb') as file:
+            pict = discord.File(file)
+            await ctx.send(file=pict, view=view)
+            last_sent_message = ctx.channel.last_message_id
+    button_main.callback = button_main_callback
+
+    async def button_forecast_callback(interaction):
+        nonlocal last_sent_message
+        await clear_previous_message(last_sent_message)
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'forecast'
+        await ctx.send(f"tu będzie pogoda\n", view=view)
+        last_sent_message = ctx.channel.last_message_id
+    button_forecast.callback = button_forecast_callback
+
+    async def button_finances_callback(interaction):
+        nonlocal last_sent_message
+        await clear_previous_message(last_sent_message)
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'deadlines'
+        await ctx.send(f"tu będą finanse\n", view=view)
+        last_sent_message = ctx.channel.last_message_id
+    button_finances.callback = button_finances_callback
+
+    async def button_deadlines_callback(interaction):
+        nonlocal last_sent_message
+        await clear_previous_message(last_sent_message)
+        nonlocal last_viewed_menu
+        last_viewed_menu = 'deadlines'
+        await ctx.send(bc.get_deadlines_message(), view=view)
+        last_sent_message = ctx.channel.last_message_id
+    button_deadlines.callback = button_deadlines_callback
+
+    async def clear_previous_message(message_id):
+        if last_viewed_menu == 'main':
+            to_delete = []
+
+            next_message = False
+            async for message in ctx.channel.history(limit=10):
+                if next_message:
+                    to_delete.append(message)
+                    break
+
+                if message.id == message_id:
+                    to_delete.append(message)
+                    next_message = True
+
+            for message in to_delete:
+                await message.delete()
+        else:
+            message = await ctx.channel.fetch_message(message_id)
+            await message.delete()
+
+    view = View()
+    view.add_item(button_main)
+    view.add_item(button_forecast)
+    view.add_item(button_finances)
+    view.add_item(button_deadlines)
+
     with open("generated_images/image.png", 'rb') as f:
         picture = discord.File(f)
-        await ctx.send(file=picture)
+        await ctx.send(file=picture, view=view)
+
+    last_sent_message = ctx.channel.last_message_id
 
 
 @client.command(brief="- says chuj")
@@ -108,7 +186,7 @@ async def terminy(ctx, *args):
         except ValueError:
             await ctx.send("Niepoprawny argument, użyj: `s!help channel`")
     else:
-        await ctx.send(bc.get_deadlines_message(5))
+        await ctx.send(bc.get_deadlines_message())
 
 
 
