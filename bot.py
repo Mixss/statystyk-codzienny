@@ -57,14 +57,17 @@ async def stats(ctx):
     button_finances = Button(label='Finanse', style=discord.ButtonStyle.blurple, custom_id='btnfinances')
     button_deadlines = Button(label='Terminy', style=discord.ButtonStyle.blurple, custom_id='btndeadlines')
 
-    async def button_main_callback(interaction):
-        await clear_previous_message()
+    async def button_main_callback():
+        nonlocal last_sent_message
+        if last_sent_message is not None:
+            await clear_previous_message(last_sent_message)
         nonlocal last_viewed_menu
         last_viewed_menu = 'main'
         await ctx.send(bc.get_daily_stats_message())
         with open("generated_images/image.png", 'rb') as file:
             pict = discord.File(file)
             await ctx.send(file=pict, view=view)
+            last_sent_message = ctx.channel.last_message_id
     button_main.callback = button_main_callback
 
     async def button_forecast_callback(interaction):
@@ -75,29 +78,34 @@ async def stats(ctx):
         await interaction.response.send_message(f"tu beda finanse")
     button_finances.callback = button_finances_callback
 
-    async def button_deadlines_callback(interaction):
-        await clear_previous_message()
+    async def button_deadlines_callback():
+        nonlocal last_sent_message
+        await clear_previous_message(last_sent_message)
         nonlocal last_viewed_menu
         last_viewed_menu = 'deadlines'
         await ctx.send(bc.get_deadlines_message(), view=view)
+        last_sent_message = ctx.channel.last_message_id
     button_deadlines.callback = button_deadlines_callback
 
-    async def clear_previous_message():
+    async def clear_previous_message(message_id):
         if last_viewed_menu == 'main':
             to_delete = []
-            counter = 0
-            async for message in ctx.channel.history(limit=100):
-                if message.author == client.user:
-                    counter += 1
-                to_delete.append(message)
-                if counter == 2:
+
+            next_message = False
+            async for message in ctx.channel.history(limit=10):
+                if next_message:
+                    to_delete.append(message)
                     break
+
+                if message.id == message_id:
+                    to_delete.append(message)
+                    next_message = True
 
             for message in to_delete:
                 await message.delete()
         else:
-            last_message = await ctx.fetch_message(ctx.channel.last_message_id)
-            await last_message.delete()
+            message = await ctx.channel.fetch_message(message_id)
+            await message.delete()
 
     view = View()
     view.add_item(button_main)
@@ -108,6 +116,8 @@ async def stats(ctx):
     with open("generated_images/image.png", 'rb') as f:
         picture = discord.File(f)
         await ctx.send(file=picture, view=view)
+
+    last_sent_message = ctx.channel.last_message_id
 
 
 @client.command(brief="- says chuj")
