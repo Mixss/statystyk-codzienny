@@ -188,6 +188,7 @@ def get_current_weather():
 
 
 def get_currencies():
+    downloaded = False
     try:
         with urllib.request.urlopen("https://api.nbp.pl/api/exchangerates/rates/a/eur/today?format=json") as url:
             data_euro = json.loads(url.read())
@@ -195,6 +196,7 @@ def get_currencies():
             data_usd = json.loads(url.read())
         euro = round(data_euro["rates"][0]["mid"], 2)
         usd = round(data_usd["rates"][0]["mid"], 2)
+        downloaded = True
     except:
         yesterday = datetime.today() - timedelta(days=1)
         date_string = yesterday.strftime("%Y-%m-%d")
@@ -207,9 +209,28 @@ def get_currencies():
                 data_usd = json.loads(url.read())
             euro = round(data_euro["rates"][0]["mid"], 2)
             usd = round(data_usd["rates"][0]["mid"], 2)
+            downloaded = True
         except:
-            euro = 1.0
-            usd = 1.0
+            # reading data from file
+            with open("data/finances.json") as file:
+                data = json.load(file)
+            currencies = data["Currencies"]
+            for currency in currencies:
+                if currency["Code"] == "EUR":
+                    euro = currency["Values"]
+                elif currency["Code"] == "USD":
+                    usd = currency["Values"]
+
+    # saving data to a file
+    if downloaded:
+        with open("data/finances.json") as file:
+            data = json.load(file)
+        currencies = data["Currencies"]
+        for currency in currencies:
+            if currency["Code"] == "EUR":
+                currency["Values"] = euro
+            elif currency["Code"] == "USD":
+                currency["Values"] = usd
 
     euro = "{:.2f}".format(euro)
     usd = "{:.2f}".format(usd)
@@ -244,3 +265,5 @@ def get_deadlines():
     months, days, courses, dates, descriptions = zip(*to_sort)
 
     return courses, dates, descriptions
+
+print(get_currencies())

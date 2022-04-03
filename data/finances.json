@@ -1,0 +1,14 @@
+{
+   "Currencies": [
+      {
+         "Currency": "Euro",
+         "Code": "EUR",
+         "Values": 4.64
+      },
+      {
+         "Currency": "Dolar amerykański",
+         "Code": "USD",
+         "Values": 4.19
+      }
+   ]
+}
