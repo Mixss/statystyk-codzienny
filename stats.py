@@ -186,29 +186,36 @@ def get_current_weather():
 
     return time_of_measurement, temperature, wind_speed, fall, pressure
 
+def download_currencies(when='today'):
+    to_list = []
+    with urllib.request.urlopen(f"https://api.nbp.pl/api/exchangerates/rates/a/eur/{when}?format=json") as url:
+        data_d = json.loads(url.read())
+        to_list.append([data_d["code"], round(data_d["rates"][0]["mid"], 2)])
+    with urllib.request.urlopen(f"https://api.nbp.pl/api/exchangerates/rates/a/usd/{when}?format=json") as url:
+        data_d = json.loads(url.read())
+        to_list.append([data_d["code"], round(data_d["rates"][0]["mid"], 2)])
+
+    return to_list
 
 def get_currencies():
     downloaded = False
+
+    result = {
+        "Values": [],
+        "Messages": []
+    }
+    to_list = []
     try:
-        with urllib.request.urlopen("https://api.nbp.pl/api/exchangerates/rates/a/eur/today?format=json") as url:
-            data_euro = json.loads(url.read())
-        with urllib.request.urlopen("https://api.nbp.pl/api/exchangerates/rates/a/usd/today?format=json") as url:
-            data_usd = json.loads(url.read())
-        euro = round(data_euro["rates"][0]["mid"], 2)
-        usd = round(data_usd["rates"][0]["mid"], 2)
+        to_list = download_currencies()
+
         downloaded = True
     except:
         yesterday = datetime.today() - timedelta(days=1)
         date_string = yesterday.strftime("%Y-%m-%d")
-        link_eur = f"https://api.nbp.pl/api/exchangerates/rates/a/eur/{date_string}?format=json"
-        link_usd = f"https://api.nbp.pl/api/exchangerates/rates/a/usd/{date_string}?format=json"
+
         try:
-            with urllib.request.urlopen(link_eur) as url:
-                data_euro = json.loads(url.read())
-            with urllib.request.urlopen(link_usd) as url:
-                data_usd = json.loads(url.read())
-            euro = round(data_euro["rates"][0]["mid"], 2)
-            usd = round(data_usd["rates"][0]["mid"], 2)
+            to_list = download_currencies(f"{date_string}")
+
             downloaded = True
         except:
             # reading data from file
@@ -216,26 +223,23 @@ def get_currencies():
                 data = json.load(file)
             currencies = data["Currencies"]
             for currency in currencies:
-                if currency["Code"] == "EUR":
-                    euro = currency["Values"]
-                elif currency["Code"] == "USD":
-                    usd = currency["Values"]
+                value = "{:.2f}".format(currency["Value"])
+                to_list.append([currency["Code"], value])
 
     # saving data to a file
-    if downloaded:
-        with open("data/finances.json") as file:
-            data = json.load(file)
-        currencies = data["Currencies"]
-        for currency in currencies:
-            if currency["Code"] == "EUR":
-                currency["Values"] = euro
-            elif currency["Code"] == "USD":
-                currency["Values"] = usd
+    with open("data/finances.json") as file:
+        data = json.load(file)
+    currencies = data["Currencies"]
+    for currency in currencies:
+        code = currency["Code"]
+        for l in to_list:
+            if l[0] == code:
+                if downloaded:
+                    currency["Value"] = l[1]
+                result["Values"].append("{:.2f}".format(currency["Value"]))
+                result["Messages"].append(currency["DiscordMessage"])
 
-    euro = "{:.2f}".format(euro)
-    usd = "{:.2f}".format(usd)
-
-    return euro, usd
+    return result
 
 
 def get_deadlines():
@@ -265,5 +269,3 @@ def get_deadlines():
     months, days, courses, dates, descriptions = zip(*to_sort)
 
     return courses, dates, descriptions
-
-print(get_currencies())

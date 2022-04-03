@@ -101,7 +101,7 @@ async def stats(ctx):
             message_to_send = bc.get_deadlines_message()
 
         elif btn == 'finances':
-            message_to_send = f"tu będą finanse\n"
+            message_to_send = bc.get_finances_message()
 
         await ctx.send(message_to_send, view=view)
 
