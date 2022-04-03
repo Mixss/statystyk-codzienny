@@ -2,6 +2,6 @@ git+https://github.com/Rapptz/discord.py
 
 matplotlib
 numpy
-opencv-python
+
 pillow
-libgl1-mesa-glx
+opencv-python-headless==4.2.0.32
