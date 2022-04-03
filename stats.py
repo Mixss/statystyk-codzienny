@@ -244,5 +244,3 @@ def get_deadlines():
     months, days, courses, dates, descriptions = zip(*to_sort)
 
     return courses, dates, descriptions
-
-print(get_currencies())
