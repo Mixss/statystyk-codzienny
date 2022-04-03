@@ -64,7 +64,7 @@ async def stats(ctx):
         nonlocal last_viewed_menu
         last_viewed_menu = 'main'
         await ctx.send(bc.get_daily_stats_message())
-        with open("generated_images/image.png", 'rb') as file:
+        with open("assets/generated_images/image.png", 'rb') as file:
             pict = discord.File(file)
             await ctx.send(file=pict, view=view)
             last_sent_message = ctx.channel.last_message_id
@@ -123,7 +123,7 @@ async def stats(ctx):
     view.add_item(button_finances)
     view.add_item(button_deadlines)
 
-    with open("generated_images/image.png", 'rb') as f:
+    with open("assets/generated_images/image.png", 'rb') as f:
         picture = discord.File(f)
         await ctx.send(file=picture, view=view)
 
@@ -133,9 +133,6 @@ async def stats(ctx):
 @client.command(brief="- says chuj")
 async def chuj(ctx):
     await ctx.send("chuj")
-    with open("generated_images/image.png", 'rb') as f:
-        picture = discord.File(f)
-        await ctx.send(file=picture)
 
 
 @client.command(brief="- zarządzanie domyślnym kanałem",

@@ -222,14 +222,14 @@ def get_deadlines():
     dates = []
     descriptions = []
 
-    with open("./deadlines/exams.csv", encoding="utf-8") as file_exams_deadlines:
+    with open("./data/deadlines/exams.csv", encoding="utf-8") as file_exams_deadlines:
         csv_reader = csv.reader(file_exams_deadlines, delimiter=';')
         for row in csv_reader:
             courses.append(row[0])
             dates.append(row[1])
             descriptions.append(row[2])
 
-    with open("./deadlines/projects.csv", encoding="utf-8") as file_projects_deadlines:
+    with open("./data/deadlines/projects.csv", encoding="utf-8") as file_projects_deadlines:
         csv_reader = csv.reader(file_projects_deadlines, delimiter=';')
         for row in csv_reader:
             courses.append(row[0])
@@ -244,3 +244,5 @@ def get_deadlines():
     months, days, courses, dates, descriptions = zip(*to_sort)
 
     return courses, dates, descriptions
+
+print(get_currencies())
