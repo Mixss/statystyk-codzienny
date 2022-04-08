@@ -8,6 +8,7 @@ from discord.ui import Button, View
 
 import stats
 import bot_config as bc
+from advanced_forecast import generate_graphs_image
 from forecast_image import generate_forecast_image
 
 intents = discord.Intents().all()
@@ -75,7 +76,14 @@ async def stats(ctx):
         await clear_previous_message(last_sent_message)
         nonlocal last_viewed_menu
         last_viewed_menu = 'forecast'
-        await ctx.send(f"tu będzie pogoda\n", view=view)
+
+        generate_graphs_image()
+        await ctx.send(f":white_sun_rain_cloud: Rozszerzona prognoza pogody\n")
+
+        with open("generated_images/graphs.png", 'rb') as file:
+            pict = discord.File(file)
+            await ctx.send(file=pict, view=view)
+            last_sent_message = ctx.channel.last_message_id
         last_sent_message = ctx.channel.last_message_id
     button_forecast.callback = button_forecast_callback
 
@@ -192,12 +200,14 @@ async def terminy(ctx, *args):
 
 # sends the same message to the channels defined i the file data/config.json
 # to add a channel to the config run 'channel set' command on the channel
-async def broadcast_message(message):
+async def broadcast_message(message, image=None):
     list = bc.get_channels()
     for el in list:
         channel_id = el["ChannelId"]
         channel = client.get_channel(channel_id)
         await channel.send(message)
+        if image is not None:
+            await channel.send(file=image)
 
 
 # sends message to a 'default' channel defined in config.json
