@@ -109,3 +109,22 @@ def get_deadlines_message(number_of_deadlines=5):
         message += f'*`{desc}`*\n\n'
 
     return message
+
+
+def get_finances_message():
+    currencies = get_currencies()
+
+    message = f":moneybag: Finanse: \n\n"
+    for i in range(len(currencies)):
+        m = currencies['Messages'][i]
+        for j in range(len(m)-1):
+            if m[j] == ';' and m[j+1] == ';':
+                end = m[(j+2):]
+                begin = m[:(j)]
+                # m = f"{currencies['Messages'][i]} = {currencies['Values'][i]} PLN\n"
+                m = begin + str(currencies['Values'][i]) + end + "\n"
+                break
+        message = message + m
+    return message
+
+

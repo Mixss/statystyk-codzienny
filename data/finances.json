@@ -1,0 +1,16 @@
+{
+   "Currencies": [
+      {
+         "Currency": "Euro",
+         "Code": "EUR",
+         "Value": 4.64,
+         "DiscordMessage": ":euro: 1 EUR = **;;** PLN"
+      },
+      {
+         "Currency": "Dolar amerykański",
+         "Code": "USD",
+         "Value": 4.20,
+         "DiscordMessage": ":dollar: 1 USD = **;;** PLN"
+      }
+   ]
+}

@@ -41,8 +41,5 @@ def generate_graphs_image():
 
     axes[0] = graph_temperature(axes[0])
 
-    plt.savefig('./generated_images/graphs.png', bbox_inches='tight', pad_inches=0)
-    plt.show()
+    plt.savefig('./assets/generated_images/graphs.png')
 
-
-generate_graphs_image()

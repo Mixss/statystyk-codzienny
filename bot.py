@@ -65,45 +65,48 @@ async def stats(ctx):
         nonlocal last_viewed_menu
         last_viewed_menu = 'main'
         await ctx.send(bc.get_daily_stats_message())
-        with open("generated_images/image.png", 'rb') as file:
+        with open("assets/generated_images/image.png", 'rb') as file:
             pict = discord.File(file)
             await ctx.send(file=pict, view=view)
             last_sent_message = ctx.channel.last_message_id
+
     button_main.callback = button_main_callback
 
     async def button_forecast_callback(interaction):
-        nonlocal last_sent_message
-        await clear_previous_message(last_sent_message)
-        nonlocal last_viewed_menu
-        last_viewed_menu = 'forecast'
+        await menu_button_click('forecast')
 
-        generate_graphs_image()
-        await ctx.send(f":white_sun_rain_cloud: Rozszerzona prognoza pogody\n")
-
-        with open("generated_images/graphs.png", 'rb') as file:
-            pict = discord.File(file)
-            await ctx.send(file=pict, view=view)
-            last_sent_message = ctx.channel.last_message_id
-        last_sent_message = ctx.channel.last_message_id
     button_forecast.callback = button_forecast_callback
 
     async def button_finances_callback(interaction):
-        nonlocal last_sent_message
-        await clear_previous_message(last_sent_message)
-        nonlocal last_viewed_menu
-        last_viewed_menu = 'deadlines'
-        await ctx.send(f"tu będą finanse\n", view=view)
-        last_sent_message = ctx.channel.last_message_id
+        await menu_button_click('finances')
+
     button_finances.callback = button_finances_callback
 
     async def button_deadlines_callback(interaction):
+        await menu_button_click('deadlines')
+
+    button_deadlines.callback = button_deadlines_callback
+
+    async def menu_button_click(btn):
         nonlocal last_sent_message
         await clear_previous_message(last_sent_message)
         nonlocal last_viewed_menu
-        last_viewed_menu = 'deadlines'
-        await ctx.send(bc.get_deadlines_message(), view=view)
+
+        last_viewed_menu = btn
+        message_to_send = "Error!"
+
+        if btn == 'forecast':
+            message_to_send = f"tu będzie pogoda\n"
+
+        elif btn == 'deadlines':
+            message_to_send = bc.get_deadlines_message()
+
+        elif btn == 'finances':
+            message_to_send = bc.get_finances_message()
+
+        await ctx.send(message_to_send, view=view)
+
         last_sent_message = ctx.channel.last_message_id
-    button_deadlines.callback = button_deadlines_callback
 
     async def clear_previous_message(message_id):
         if last_viewed_menu == 'main':
@@ -131,7 +134,7 @@ async def stats(ctx):
     view.add_item(button_finances)
     view.add_item(button_deadlines)
 
-    with open("generated_images/image.png", 'rb') as f:
+    with open("assets/generated_images/image.png", 'rb') as f:
         picture = discord.File(f)
         await ctx.send(file=picture, view=view)
 
@@ -141,9 +144,6 @@ async def stats(ctx):
 @client.command(brief="- says chuj")
 async def chuj(ctx):
     await ctx.send("chuj")
-    with open("generated_images/image.png", 'rb') as f:
-        picture = discord.File(f)
-        await ctx.send(file=picture)
 
 
 @client.command(brief="- zarządzanie domyślnym kanałem",
@@ -195,7 +195,6 @@ async def terminy(ctx, *args):
             await ctx.send("Niepoprawny argument, użyj: `s!help channel`")
     else:
         await ctx.send(bc.get_deadlines_message())
-
 
 
 # sends the same message to the channels defined i the file data/config.json

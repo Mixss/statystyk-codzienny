@@ -81,48 +81,48 @@ def rotation(image, angle_in_degrees):
 
 def icon_file_lookup(icon_number):
     if icon_number == 1 or icon_number == 2 or icon_number == 4 or icon_number == 30:
-        return "./icons/1,2,4,30.png"
+        return "./assets/icons/1,2,4,30.png"
     if icon_number == 3 or icon_number == 6 or icon_number == 20:
-        return "./icons/3,6,20.png"
+        return "./assets/icons/3,6,20.png"
     if icon_number == 5:
-        return "./icons/5.png"
+        return "./assets/icons/5.png"
     if icon_number == 7 or icon_number == 8 or icon_number == 19 or icon_number == 38:
-        return "./icons/7,8,19,38.png"
+        return "./assets/icons/7,8,19,38.png"
     if icon_number == 11:
-        return "./icons/11.png"
+        return "./assets/icons/11.png"
     if icon_number == 12 or icon_number == 18:
-        return "./icons/12,18.png"
+        return "./assets/icons/12,18.png"
     if icon_number == 13 or icon_number == 14:
-        return "./icons/13,14.png"
+        return "./assets/icons/13,14.png"
     if icon_number == 15 or icon_number == 16 or icon_number == 17:
-        return "./icons/15,16,17.png"
+        return "./assets/icons/15,16,17.png"
     if icon_number == 21:
-        return "./icons/21.png"
+        return "./assets/icons/21.png"
     if icon_number == 22 or icon_number == 23 or icon_number == 24 or icon_number == 25 \
             or icon_number == 26 or icon_number == 29 or icon_number == 31:
-        return "./icons/22,23,24,25,26,29,31.png"
+        return "./assets/icons/22,23,24,25,26,29,31.png"
     if icon_number == 32:
-        return "./icons/32.png"
+        return "./assets/icons/32.png"
     if icon_number == 33 or icon_number == 34:
-        return "./icons/33,34.png"
+        return "./assets/icons/33,34.png"
     if icon_number == 35:
-        return "./icons/35.png"
+        return "./assets/icons/35.png"
     if icon_number == 36:
-        return "./icons/36.png"
+        return "./assets/icons/36.png"
     if icon_number == 37:
-        return "./icons/37.png"
+        return "./assets/icons/37.png"
     if icon_number == 39 or icon_number == 40:
-        return "./icons/39,40.png"
+        return "./assets/icons/39,40.png"
     if icon_number == 41 or icon_number == 42:
-        return "./icons/41,42.png"
+        return "./assets/icons/41,42.png"
     if icon_number == 43:
-        return "./icons/43.png"
+        return "./assets/icons/43.png"
     if icon_number == 44:
-        return "./icons/43.png"
+        return "./assets/icons/43.png"
 
 
 def draw_temperatures(image, temperatures, color, font_size):
-    unicode_font = ImageFont.truetype("./fonts/IBMPlexSansArabic-Light.ttf", font_size)
+    unicode_font = ImageFont.truetype("./assets/fonts/IBMPlexSansArabic-Light.ttf", font_size)
 
     lines = create_lines()[:-1]
 
@@ -207,7 +207,7 @@ def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
 
     font = cv.FONT_HERSHEY_DUPLEX
 
-    arrow_image = cv.imread("./icons/arrow.png", -1)
+    arrow_image = cv.imread("./assets/icons/arrow.png", -1)
     resized_arrow_image = cv.resize(arrow_image, (int(arrow_image.shape[0] * 0.5), int(arrow_image.shape[1] * 0.5)),
                                     interpolation=cv.INTER_AREA)
 
@@ -259,7 +259,7 @@ def generate_forecast_image():
     draw_icons(image, icons)
     draw_wind(image, wind_speeds, wind_directions, (191, 188, 186), 1.3)
 
-    cv.imwrite("./generated_images/image.png", image)
+    cv.imwrite("./assets/generated_images/image.png", image)
 
 
 generate_forecast_image()
