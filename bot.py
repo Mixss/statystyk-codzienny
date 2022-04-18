@@ -8,6 +8,7 @@ from discord.ui import Button, View
 
 import stats
 import bot_config as bc
+from advanced_forecast import generate_graphs_image
 from forecast_image import generate_forecast_image
 
 intents = discord.Intents().all()
@@ -198,12 +199,14 @@ async def terminy(ctx, *args):
 
 # sends the same message to the channels defined i the file data/config.json
 # to add a channel to the config run 'channel set' command on the channel
-async def broadcast_message(message):
+async def broadcast_message(message, image=None):
     list = bc.get_channels()
     for el in list:
         channel_id = el["ChannelId"]
         channel = client.get_channel(channel_id)
         await channel.send(message)
+        if image is not None:
+            await channel.send(file=image)
 
 
 # sends message to a 'default' channel defined in config.json
