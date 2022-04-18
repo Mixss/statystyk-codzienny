@@ -197,6 +197,23 @@ async def terminy(ctx, *args):
         await ctx.send(bc.get_deadlines_message())
 
 
+# sends stats to the channels defined i the file data/config.json
+# to add a channel to the config run 'channel set' command on the channel
+async def broadcast_stats():
+    list = bc.get_channels()
+    for el in list:
+        channel_id = el["ChannelId"]
+        channel = client.get_channel(channel_id)
+
+        generate_forecast_image()
+        await channel.send(bc.get_daily_stats_message())
+
+
+        with open("assets/generated_images/image.png", 'rb') as f:
+            picture = discord.File(f)
+            await channel.send(file=picture)
+
+
 # sends the same message to the channels defined i the file data/config.json
 # to add a channel to the config run 'channel set' command on the channel
 async def broadcast_message(message, image=None):
@@ -227,4 +244,4 @@ async def send_stats():
     if 4 <= hour < 5:
         if 15 <= minute < 45:
             print(f"{hour}:{minute} -> wysyłam pobrane statystyki")
-            await broadcast_message(bc.get_daily_stats_message())
+            await broadcast_stats()

@@ -2,6 +2,7 @@ git+https://github.com/Rapptz/discord.py
 
 matplotlib
 numpy
+scipy
 
 pillow
 opencv-python-headless==4.5.5.64
