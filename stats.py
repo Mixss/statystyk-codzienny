@@ -186,6 +186,7 @@ def get_current_weather():
 
     return time_of_measurement, temperature, wind_speed, fall, pressure
 
+
 def download_currencies(when='today'):
     to_list = []
     with urllib.request.urlopen(f"https://api.nbp.pl/api/exchangerates/rates/a/eur/{when}?format=json") as url:
@@ -196,6 +197,7 @@ def download_currencies(when='today'):
         to_list.append([data_d["code"], round(data_d["rates"][0]["mid"], 2)])
 
     return to_list
+
 
 def get_currencies():
     downloaded = False

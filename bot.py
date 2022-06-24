@@ -48,7 +48,6 @@ async def button(ctx):
                 description="Wysyła informacje na temat dzisiejszego dnia.\n"
                             "Informacje takie jak dzień w roku, imieniny, prognoza pogody i inne")
 async def stats(ctx):
-    generate_forecast_image()
     await ctx.send(bc.get_daily_stats_message())
 
     last_viewed_menu = 'main'  # other values: forecast, finances, deadlines
@@ -208,7 +207,6 @@ async def broadcast_stats():
         generate_forecast_image()
         await channel.send(bc.get_daily_stats_message())
 
-
         with open("assets/generated_images/image.png", 'rb') as f:
             picture = discord.File(f)
             await channel.send(file=picture)
@@ -245,3 +243,10 @@ async def send_stats():
         if 15 <= minute < 45:
             print(f"{hour}:{minute} -> wysyłam pobrane statystyki")
             await broadcast_stats()
+
+
+@tasks.loop(hours=1)
+async def generate_weather_image():
+    generate_forecast_image()
+
+    print(f'Wygenerowano obraz - {datetime.now().hour}:{datetime.now().minute}')
