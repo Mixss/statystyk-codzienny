@@ -261,5 +261,3 @@ def generate_forecast_image():
 
     cv.imwrite("./assets/generated_images/image.png", image)
 
-
-generate_forecast_image()
