@@ -94,8 +94,14 @@ async def stats(ctx):
         last_viewed_menu = btn
         message_to_send = "Error!"
 
+        image_to_display = None
+
         if btn == 'forecast':
-            message_to_send = f"tu będzie pogoda\n"
+            message_to_send = ":thermometer: **Rozszerzona prognoza pogody**"
+
+            with open("assets/generated_images/graphs.png", 'rb') as file:
+                pict = discord.File(file)
+                image_to_display = pict
 
         elif btn == 'deadlines':
             message_to_send = bc.get_deadlines_message()
@@ -103,7 +109,7 @@ async def stats(ctx):
         elif btn == 'finances':
             message_to_send = bc.get_finances_message()
 
-        await ctx.send(message_to_send, view=view)
+        await ctx.send(message_to_send, view=view, file=image_to_display)
 
         last_sent_message = ctx.channel.last_message_id
 
@@ -242,11 +248,16 @@ async def send_stats():
     if 4 <= hour < 5:
         if 15 <= minute < 45:
             print(f"{hour}:{minute} -> wysyłam pobrane statystyki")
+
+            generate_forecast_image()
+            generate_graphs_image()
+
             await broadcast_stats()
 
 
 @tasks.loop(hours=1)
 async def generate_weather_image():
     generate_forecast_image()
+    generate_graphs_image()
 
     print(f'Wygenerowano obraz - {datetime.now().hour}:{datetime.now().minute}')
