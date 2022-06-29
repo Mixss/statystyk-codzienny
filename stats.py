@@ -1,9 +1,10 @@
 import csv
-import math
+import json
 import time
+import urllib.request
 from datetime import date, datetime, timedelta
-import urllib.request, json
-import http.client
+import requests
+from bs4 import BeautifulSoup
 
 days_of_week = {
     0: "poniedziałek",
@@ -197,6 +198,33 @@ def download_currencies(when='today'):
         to_list.append([data_d["code"], round(data_d["rates"][0]["mid"], 2)])
 
     return to_list
+
+
+def download_gas_prices():
+    gas_prices = {}
+
+    try:
+        url = 'https://www.autocentrum.pl/paliwa/ceny-paliw/pomorskie/'
+
+        response = requests.get(url)
+    except:
+        print('Gas prices response is not 200 OK, terminating function')
+        return gas_prices
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    div = soup.find('div', {'class': 'fuels-wrapper'})
+
+    contents = list(div.children)
+
+    for fuel_type in contents:
+        if not isinstance(fuel_type, type(contents[0])):
+            fuel_type_text = fuel_type.text.splitlines()
+
+            gas_prices[fuel_type_text[1]] = fuel_type_text[3].strip()
+
+    gas_prices.pop('ON+')
+
+    return gas_prices
 
 
 def get_currencies():

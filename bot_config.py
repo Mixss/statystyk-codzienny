@@ -114,6 +114,8 @@ def get_deadlines_message(number_of_deadlines=5):
 def get_finances_message():
     currencies = get_currencies()
 
+    gas_prices = download_gas_prices()
+
     message = f":moneybag: Finanse: \n\n"
     for i in range(len(currencies)):
         m = currencies['Messages'][i]
@@ -125,6 +127,12 @@ def get_finances_message():
                 m = begin + str(currencies['Values'][i]) + end + "\n"
                 break
         message = message + m
+
+    message += '\n\n:fuelpump: Ceny paliw (średnia cen na pomorzu):\n\n'
+
+    for fuel_type in gas_prices.items():
+        message += f'{fuel_type[0]}: **{fuel_type[1]}** PLN\n'
+
     return message
 
 
