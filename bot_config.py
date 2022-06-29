@@ -93,15 +93,21 @@ def get_current_weather_message():
 def get_deadlines_message(number_of_deadlines=5):
     courses, dates, descriptions = get_deadlines()
 
+    if len(courses) < number_of_deadlines:
+        number_of_deadlines = len(courses)
+
     text = ""
     if number_of_deadlines == 1:
-        text = "najbliższy ważny termin"
-    elif number_of_deadlines == 3 or number_of_deadlines == 4:
+        text = "Najbliższy ważny termin"
+        message = f':flushed: **{text}**\n\n'
+    elif number_of_deadlines == 2 or number_of_deadlines == 3 or number_of_deadlines == 4:
         text = "najbliższe ważne terminy"
+        message = f':flushed: **{number_of_deadlines} {text}**\n\n'
     else:
         text = "najbliższych ważnych terminów"
+        message = f':flushed: **{number_of_deadlines} {text}**\n\n'
 
-    message = f':flushed: **{number_of_deadlines} {text}**\n\n'
+
 
     for course, date, desc in zip(courses[:number_of_deadlines], dates[:number_of_deadlines],
                                   descriptions[:number_of_deadlines]):
