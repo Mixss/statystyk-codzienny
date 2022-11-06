@@ -44,6 +44,7 @@ def get_daily_stats_message():
     sr, ss = get_sunset_sunrise()
     forecastText, minTemp, maxTemp, forecastInfo, raining, air, uvidex, uvdanger, moon_phase = get_daily_forecast()
     euro, usd = get_currencies()
+    holiday = get_holiday()
 
     message = f"Statystyki na dzień **{get_today()}** ({get_day_of_week()}): \n" \
               f" \n" \
@@ -57,6 +58,7 @@ def get_daily_stats_message():
               f" \n" \
               f"Imieniny: :couple: *{get_today_names()}* \n" \
               f" \n" \
+              f"Dzisiejsze święto: :champagne_glass: *{holiday}* \n\n" \
               f":mask: Jakość powietrza: *{air}* \n" \
               f":sunglasses: Index UV: **{uvidex}** ({uvdanger}) \n " \
               f" \n" \
