@@ -269,3 +269,15 @@ def get_deadlines():
     months, days, courses, dates, descriptions = zip(*to_sort)
 
     return courses, dates, descriptions
+
+def get_holiday():
+    today = date.today()
+    month = today.month
+    day = today.day
+    with urllib.request.urlopen(
+            f"https://pniedzwiedzinski.github.io/kalendarz-swiat-nietypowych/{month}/{day}.json") as url:
+        data = json.loads(url.read())
+
+    holiday = data[0]['name']
+    return holiday
+
