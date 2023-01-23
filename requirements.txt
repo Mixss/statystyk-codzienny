@@ -1,4 +1,4 @@
-discord.py
+nextcord~=2.3.2
 
 matplotlib
 numpy
