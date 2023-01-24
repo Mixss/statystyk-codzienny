@@ -105,3 +105,14 @@ def current_weather_message_template():
     embed.add_field(name=f'🕰 Ciśnienie: **{press}** hPa', value=' ', inline=False)
 
     return embed
+
+
+def help_message_embed():
+    embed = nextcord.Embed(title='Dostępne komendy')
+
+    embed.add_field(name='/help', value=' \n‎', inline=False)
+    embed.add_field(name='/channel', value='Umożliwia zarządzanie domyślnym kanałem, dostępne tryby działania: `set`, '
+                                           '`unset`, `check`\n‎', inline=False)
+    embed.add_field(name='/stats', value='Wysyła ogólne informacje o dzisiejszym dniu, m.in. święto, imieniny, '
+                                         'prognozę pogody, ceny walut, paliwa itd\n‎', inline=False)
+    embed.add_field(name='/weather', value='Wyświetla aktualną prognozę pogody w pigułce')
