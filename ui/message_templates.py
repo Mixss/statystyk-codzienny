@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 
 import nextcord
 
-from stats import get_sunset_sunrise, get_currencies, get_holiday, get_daily_forecast, get_today, get_day_of_week, \
+from logic.logic import get_sunset_sunrise, get_currencies, get_holiday, get_daily_forecast, get_today, get_day_of_week, \
     get_day_of_the_year, get_days_left_to_the_end_of_the_year, get_week_of_the_year, get_today_names, get_deadlines, \
-    download_gas_prices
+    download_gas_prices, get_current_weather
 
 
 def daily_stats_embed(image_path):
@@ -58,12 +58,11 @@ def deadlines_message_template(number_of_deadlines=5):
     return message
 
 
-class Gasprices:
-    gas_prices = download_gas_prices()
-    last_gas_prices_download = datetime.now()
-
-
 def finances_message_template():
+    class Gasprices:
+        gas_prices = download_gas_prices()
+        last_gas_prices_download = datetime.now()
+
     currencies = get_currencies()
 
     if datetime.now() - Gasprices.last_gas_prices_download > timedelta(days=1):
@@ -87,3 +86,22 @@ def finances_message_template():
         message += f'{fuel_type[0]}: **{fuel_type[1]}** PLN\n'
 
     return message
+
+
+def current_weather_message_template():
+    tom, temp, wind_s, fall, press = get_current_weather()
+
+    message = f"**Aktualna pogoda** (pomiar *{tom}:00*):\n\n" \
+              f":thermometer: Temperatura **{temp} °C**\n" \
+              f":dash: Prędkość wiatru: **{wind_s}** km/h \n" \
+              f":cloud_rain: Opady: **{fall}** mm/h \n" \
+              f":clock: Ciśnienie: **{press}** hPa"
+
+    embed = nextcord.Embed(title=f'Aktualna pogoda (pomiar {tom}:00)')
+
+    embed.add_field(name=f'🌡️ Temperatura: **{temp} °C**', value=' ')
+    embed.add_field(name=f'💨 Prędkość wiatru: **{wind_s}** km/h', value=' ')
+    embed.add_field(name=f'🌧️ Opady: **{fall}** mm/h', value=' ')
+    embed.add_field(name=f'🕰 Ciśnienie: **{press}** hPa', value=' ')
+
+    return embed

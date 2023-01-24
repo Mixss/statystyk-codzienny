@@ -1,7 +1,7 @@
 import os
 
-from advanced_forecast import generate_graphs_image
-from forecast_image import generate_forecast_image
+from logic.advanced_forecast import generate_graphs_image
+from logic.forecast_image import generate_forecast_image
 
 
 def get_client_token():

@@ -3,7 +3,7 @@ import cv2 as cv
 from PIL import ImageFont, ImageDraw, Image
 import math
 
-from stats import get_hourly_forecast
+from logic.logic import get_hourly_forecast
 
 IMAGE_WIDTH = 1000
 IMAGE_HEIGHT = 800
@@ -207,7 +207,7 @@ def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
 
     font = cv.FONT_HERSHEY_DUPLEX
 
-    arrow_image = cv.imread("./assets/icons/arrow.png", -1)
+    arrow_image = cv.imread("../assets/icons/arrow.png", -1)
     resized_arrow_image = cv.resize(arrow_image, (int(arrow_image.shape[0] * 0.5), int(arrow_image.shape[1] * 0.5)),
                                     interpolation=cv.INTER_AREA)
 
@@ -259,5 +259,5 @@ def generate_forecast_image():
     draw_icons(image, icons)
     draw_wind(image, wind_speeds, wind_directions, (191, 188, 186), 1.3)
 
-    cv.imwrite("./assets/generated_images/image.png", image)
+    cv.imwrite("../assets/generated_images/image.png", image)
 

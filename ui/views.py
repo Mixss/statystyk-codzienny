@@ -27,8 +27,6 @@ class StatsView(View):
 
         MessageEditHandler.last_message = interaction.message
 
-        print(interaction.message.id)
-
         StatsView.last_view_state = 'main_page'
 
     @nextcord.ui.button(label='Rozszerzona pogoda', style=nextcord.ButtonStyle.green)
