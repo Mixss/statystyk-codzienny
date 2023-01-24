@@ -1,6 +1,32 @@
-# from bot_setup import *
-# bot.run()
-#
-from bot import *
+import nextcord
+from nextcord.ext import commands
+from nextcord import Intents
 
-client.run('OTU3OTYxMDg5NzIxNzI0OTY4.YkGYyQ.AxfC0a-LxMGBexV5bIyaah8sFiQ')
+from utils import utils
+from utils.utils import generate_images
+
+activity = nextcord.Activity(name='/help', type=nextcord.ActivityType.listening)
+client = commands.Bot(command_prefix='s!', intents=Intents().all(), activity=activity)
+
+
+@client.event
+async def on_ready():
+    print('\nClient started successfully')
+
+
+def bot_run():
+    """starts basic bot configuration like loading commands and establishing bot connection"""
+
+    token = utils.get_client_token()
+    if token is None:
+        raise KeyError(f'Failed to get configuration key. Env variable \'CLIENT_TOKEN\' not found')
+
+    print('client: loading extensions:')
+    utils.load_extensions(client)
+
+    generate_images()
+
+    client.run(token)
+
+
+bot_run()

@@ -96,6 +96,6 @@ def generate_graphs_image():
     graph_wind(axes[2], hours)
 
     plt.tight_layout()
-    plt.savefig('./assets/generated_images/graphs.png')
+    plt.savefig('./assets/generated_images/graphs.png', pil_kwargs={'compress_level': 7})
 
 
