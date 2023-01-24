@@ -42,6 +42,18 @@ def unset_default_channel(server_id):
                   'ustawić za pomocą `/channel set`'
 
 
+def get_default_channel(server_id) -> (bool, int, str):
+    with open("data/config.json") as file:
+        data = json.load(file)
+
+    for el in data["BroadcastChannels"]:
+        if el["ServerId"] == server_id:
+            return True, el["ChannelId"], ''
+
+    return False, -1, 'Ten serwer nie posiada kanału domyślnego. Możesz go ' \
+                      'ustawić za pomocą `/channel set`'
+
+
 def get_channels():
     with open("data/config.json") as file:
         data = json.load(file)

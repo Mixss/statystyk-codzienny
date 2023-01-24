@@ -99,9 +99,9 @@ def current_weather_message_template():
 
     embed = nextcord.Embed(title=f'Aktualna pogoda (pomiar {tom}:00)')
 
-    embed.add_field(name=f'🌡️ Temperatura: **{temp} °C**', value=' ')
-    embed.add_field(name=f'💨 Prędkość wiatru: **{wind_s}** km/h', value=' ')
-    embed.add_field(name=f'🌧️ Opady: **{fall}** mm/h', value=' ')
-    embed.add_field(name=f'🕰 Ciśnienie: **{press}** hPa', value=' ')
+    embed.add_field(name=f'🌡️ Temperatura: **{temp} °C**', value=' ', inline=False)
+    embed.add_field(name=f'💨 Prędkość wiatru: **{wind_s}** km/h', value=' ', inline=False)
+    embed.add_field(name=f'🌧️ Opady: **{fall}** mm/h', value=' ', inline=False)
+    embed.add_field(name=f'🕰 Ciśnienie: **{press}** hPa', value=' ', inline=False)
 
     return embed

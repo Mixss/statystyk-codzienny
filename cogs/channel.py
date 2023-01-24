@@ -2,7 +2,7 @@ import nextcord
 from nextcord import slash_command, SlashOption
 from nextcord.ext.commands import Cog, Bot
 
-from logic.logic import set_default_channel, unset_default_channel
+from logic.logic import set_default_channel, unset_default_channel, get_default_channel
 from ui.message_templates import current_weather_message_template
 
 
@@ -12,7 +12,7 @@ class CommandChannel(Cog):
         self.client = client
 
     @slash_command(name='channel', description='Umożliwia zarządzanie domyślnym kanałem')
-    async def channel(self, interaction: nextcord.Interaction, mode = SlashOption(
+    async def channel(self, interaction: nextcord.Interaction, mode=SlashOption(
         name='mode', choices={'set': 'set', 'unset': 'unset', 'check': 'check'})):
 
         if mode == 'set':
@@ -34,17 +34,15 @@ class CommandChannel(Cog):
                                                    'domyślny używając `/channel set')
 
         elif mode == 'check':
-            status, error_message = unset_default_channel(interaction.guild_id)
+            status, channel_id, error_message = get_default_channel(interaction.guild_id)
             if not status:
                 await interaction.response.send_message(error_message)
                 return
 
-            await interaction.response.send_message(f'{interaction.message.author.mention} Ten kanał jest ustawiony '
-                                                    f'jako domyślny.')
+            channel = self.client.get_channel(channel_id)
 
-
-
-
+            await interaction.response.send_message(f'{interaction.user.mention} Kanał {channel.mention} jest '
+                                                    f'ustawiony jako domyślny')
 
 
 def setup(bot):
