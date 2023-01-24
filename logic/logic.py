@@ -123,7 +123,8 @@ def get_days_left_to_the_end_of_the_year():
 
 
 def get_week_of_the_year():
-    return date.today().strftime("%V")
+    week = date.today().strftime("%W")
+    return int(week)
 
 
 def get_day_of_week():
