@@ -34,7 +34,7 @@ shown on a graph, gas prices and the exchange values of major currencies.
 
 This is an example of the daily message (in Polish)
 <p align="center">
-<img  src="./assets/statystyk-codzienny-example-stats.png" width="60%" height="60%">
+<img  src="https://user-images.githubusercontent.com/19227717/214323454-18f7e21e-da8b-4b39-b7c3-65613d041d02.png" width="60%" height="60%">
 </p>
 
 # Usage
