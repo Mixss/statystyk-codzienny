@@ -44,7 +44,7 @@ This is an example of the daily message (in Polish)
 Click [this link](https://discord.com/api/oauth2/authorize?client_id=957961089721724968&permissions=534723951680&scope=bot)
 to invite the bot to your server
 
-Then set the default channel to send daily messages using `s!channel set`
+Then set the default channel to send daily messages using `/channel set`
 
 ## Using commands
 
