@@ -48,20 +48,20 @@ Then set the default channel to send daily messages using `s!channel set`
 
 ## Using commands
 
-The default command prefix is `s!`
+Command can be executed as discord *slash commands*.
 
-To view the help menu, enter `s!help`
+To view the help menu, enter `/help`
 
 Here is a list of available commands:
-- `s!help` - shows available commands
-- `s!channel` - modify or view the default channel where daily messages will be 
+- `/help` - shows available commands
+- `/channel` - modify or view the default channel where daily messages will be 
 sent
-  - `s!channel set` - set this channel as default
-  - `s!channel check` - the bot will send a message in the default channel
-  - `s!channel unset` - messages will no longer be sent to any channel
-- `s!stats` - shows stats about the current day, the resulting message also has
+  - `/channel set` - set this channel as default
+  - `/channel check` - the bot will send a message indicating which channel is set as default
+  - `/channel unset` - messages will no longer be sent to any channel
+- `/stats` - shows stats about the current day, the resulting message also has
   these navigation buttons:
   - Main page
   - Advanced/extended weather forecast shown on a graph
   - Finances - currency exchange rates and gas prices
-- `s!weather` - shows only the weather
+- `/weather` - shows only the weather
