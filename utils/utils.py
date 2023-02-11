@@ -1,7 +1,25 @@
 import os
 
+import nextcord
+from nextcord.ext import tasks
+import datetime
+import json
+
 from logic.advanced_forecast import generate_graphs_image
 from logic.forecast_image import generate_forecast_image
+from ui import message_templates
+
+
+class BotObjectHolder:
+    bot = None
+
+    @staticmethod
+    def get_bot():
+        return BotObjectHolder.bot
+
+    @staticmethod
+    def set_bot(bot):
+        BotObjectHolder.bot = bot
 
 
 def get_client_token():
@@ -18,3 +36,51 @@ def load_extensions(client):
 def generate_images():
     generate_forecast_image()
     generate_graphs_image()
+    
+
+def get_channels():
+    with open("data/config.json") as file:
+        data = json.load(file)
+
+    return data["BroadcastChannels"]
+
+
+# sends stats to the channels defined i the file data/config.json
+# to add a channel to the config run 'channel set' command on the channel
+async def broadcast_stats():
+    channel_list = get_channels()
+    client = BotObjectHolder.get_bot()
+    print(client)
+
+    for el in channel_list:
+        channel_id = el["ChannelId"]
+        channel = client.get_channel(channel_id)
+        print(channel)
+
+        forecast_image = nextcord.File('./assets/generated_images/image.png')
+
+        await channel.send(embed=message_templates.daily_stats_embed(forecast_image.filename), files=[forecast_image])
+
+
+@tasks.loop(minutes=30)
+async def send_stats():
+    now = datetime.datetime.now()
+    hour = now.hour
+    minute = now.minute
+    if 4 <= hour < 5:
+        if 15 <= minute < 45:
+            print(f"{hour}:{minute} -> wysyłam pobrane statystyki")
+
+            generate_forecast_image()
+            generate_graphs_image()
+
+            await broadcast_stats()
+
+
+@tasks.loop(hours=1)
+async def generate_weather_image():
+    generate_forecast_image()
+    generate_graphs_image()
+
+    print(f'Wygenerowano obraz - {datetime.datetime.now().hour}:{datetime.datetime.now().minute}')
+
