@@ -3,7 +3,7 @@ from nextcord.ext import commands
 from nextcord import Intents
 
 from utils import utils
-from utils.utils import generate_images
+from utils.utils import generate_images, send_stats, BotObjectHolder
 
 activity = nextcord.Activity(name='/help', type=nextcord.ActivityType.listening)
 client = commands.Bot(command_prefix='s!', intents=Intents().all(), activity=activity)
@@ -12,6 +12,7 @@ client = commands.Bot(command_prefix='s!', intents=Intents().all(), activity=act
 @client.event
 async def on_ready():
     print('\nClient started successfully')
+    send_stats.start()
 
 
 def bot_run():
@@ -25,6 +26,8 @@ def bot_run():
     utils.load_extensions(client)
 
     generate_images()
+
+    BotObjectHolder.set_bot(client)
 
     client.run(token)
 
