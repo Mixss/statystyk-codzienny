@@ -21,8 +21,9 @@ class StatsView(View):
             return
 
         forecast_image = nextcord.File('./assets/generated_images/image.png')
+        embed = await message_templates.daily_stats_embed(forecast_image.filename)
         await MessageEditHandler.last_message.edit(content='',
-                                                   embed=message_templates.daily_stats_embed(forecast_image.filename),
+                                                   embed=embed,
                                                    view=StatsView(self.client), files=[forecast_image])
 
         MessageEditHandler.last_message = interaction.message

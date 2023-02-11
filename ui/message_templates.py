@@ -7,9 +7,9 @@ from logic.logic import get_sunset_sunrise, get_currencies, get_holiday, get_dai
     download_gas_prices, get_current_weather, get_birthday_message
 
 
-def daily_stats_embed(image_path):
+async def daily_stats_embed(image_path, our_server=False):
     _, _, _, _, _, air_quality, uvidex, _, moon_phase = get_daily_forecast()
-    birthday_message, num_of_birthdays = get_birthday_message()
+    birthday_message, num_of_birthdays = await get_birthday_message(our_server)
 
     embed = nextcord.Embed(title=f'Statystyki na dzień **{get_today()}** ({get_day_of_week()}):',
                            description=f'📅 Jest to **{get_day_of_the_year()}** dzień w roku i'

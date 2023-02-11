@@ -1,3 +1,4 @@
+import asyncio
 import csv
 import json
 import time
@@ -5,6 +6,8 @@ import urllib.request
 from datetime import date, datetime, timedelta
 import requests
 from bs4 import BeautifulSoup
+
+from utils.bot_object_holder import BotObjectHolder
 
 
 def set_default_channel(server_id, channel_id):
@@ -140,10 +143,20 @@ def get_sunset_sunrise():
     return sunrise, sunset
 
 
-def get_birthday_message():
+async def get_birthday_message(our_server):
     todays_date = datetime.today()
     ret = ''
     num_of_birthdays = 0
+
+    if our_server:
+        with open('data/birthdays/users.csv') as file:
+            data = csv.reader(file, delimiter=',')
+
+            for row in data:
+                if row[0] == str(todays_date.day) and row[1] == str(todays_date.month):
+                    user = await BotObjectHolder.get_bot().fetch_user(row[3])
+
+                    ret += user.mention + f' 🥳 🎉 🤩 \nWszystkiego najlepszego z okazji {str(todays_date.year - int(row[2]))} urodzin!!!\n\n'
 
     with open('data/birthdays/famous_people.csv') as file:
         data = csv.reader(file, delimiter=',')

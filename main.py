@@ -3,7 +3,8 @@ from nextcord.ext import commands
 from nextcord import Intents
 
 from utils import utils
-from utils.utils import generate_images, send_stats, BotObjectHolder
+from utils.bot_object_holder import BotObjectHolder
+from utils.utils import generate_images, send_stats
 
 activity = nextcord.Activity(name='/help', type=nextcord.ActivityType.listening)
 client = commands.Bot(command_prefix='s!', intents=Intents().all(), activity=activity)
