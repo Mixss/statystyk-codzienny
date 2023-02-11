@@ -4,11 +4,12 @@ import nextcord
 
 from logic.logic import get_sunset_sunrise, get_currencies, get_holiday, get_daily_forecast, get_today, get_day_of_week, \
     get_day_of_the_year, get_days_left_to_the_end_of_the_year, get_week_of_the_year, get_today_names, get_deadlines, \
-    download_gas_prices, get_current_weather
+    download_gas_prices, get_current_weather, get_birthday_message
 
 
 def daily_stats_embed(image_path):
     _, _, _, _, _, air_quality, uvidex, _, moon_phase = get_daily_forecast()
+    birthday_message, num_of_birthdays = get_birthday_message()
 
     embed = nextcord.Embed(title=f'Statystyki na dzień **{get_today()}** ({get_day_of_week()}):',
                            description=f'📅 Jest to **{get_day_of_the_year()}** dzień w roku i'
@@ -16,6 +17,8 @@ def daily_stats_embed(image_path):
                                        f'pozostało **{get_days_left_to_the_end_of_the_year()}** dni do końca roku\n‎')
 
     embed.add_field(name='🥂 Dzisiejsze święto', value=get_holiday() + '\n‎', inline=False)
+
+    embed.add_field(name=f'🎂 Urodziny ma{"ją" if num_of_birthdays >= 2 else ""}', value=birthday_message + '\n‎', inline=False)
 
     embed.add_field(name='🌅 Wschód słońca', value=get_sunset_sunrise()[0] + '\n‎', inline=True)
     embed.add_field(name='🌇 Zachód słońca', value=get_sunset_sunrise()[1] + '\n‎', inline=True)

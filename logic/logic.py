@@ -140,6 +140,29 @@ def get_sunset_sunrise():
     return sunrise, sunset
 
 
+def get_birthday_message():
+    todays_date = datetime.today()
+    ret = ''
+    num_of_birthdays = 0
+
+    with open('data/birthdays/famous_people.csv') as file:
+        data = csv.reader(file, delimiter=',')
+        for row in data:
+            if row[0] == str(todays_date.day) and row[1] == str(todays_date.month):
+                i = 2
+                while row[i] != '':
+                    ret += row[i] + ' - '
+                    ret += f'*{row[i + 1]}* - '
+                    ret += str(todays_date.year - int(row[i + 1])) + ' lat\n'
+                    i += 2
+                    num_of_birthdays += 1
+
+                ret = ret[:-1]
+                break
+
+    return ret, num_of_birthdays
+
+
 def get_utc_difference():
     return time.localtime().tm_hour - time.gmtime().tm_hour
 
