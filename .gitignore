@@ -4,5 +4,3 @@ venv/
 .idea/
 logo.png
 assets/generated_images/*
-data/forecast_12_hours.json
-data/forecast_daily.json
