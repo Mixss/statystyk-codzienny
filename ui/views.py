@@ -10,12 +10,12 @@ from ui.utils import MessageEditHandler
 class StatsView(View):
 
     def __init__(self, client: Bot):
-        super().__init__()
+        super().__init__(timeout=None)
         self.client = client
 
     last_view_state = 'main_page'
 
-    @nextcord.ui.button(label='Strona główna', style=nextcord.ButtonStyle.danger)
+    @nextcord.ui.button(label='Strona główna', style=nextcord.ButtonStyle.danger, custom_id='main-page')
     async def main_page(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if StatsView.last_view_state == 'main_page':
             return
@@ -29,7 +29,7 @@ class StatsView(View):
 
         StatsView.last_view_state = 'main_page'
 
-    @nextcord.ui.button(label='Rozszerzona pogoda', style=nextcord.ButtonStyle.green)
+    @nextcord.ui.button(label='Rozszerzona pogoda', style=nextcord.ButtonStyle.green, custom_id='extended-forecast')
     async def extended_forecast(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if StatsView.last_view_state == 'extended_forecast':
             return
@@ -40,7 +40,7 @@ class StatsView(View):
 
         StatsView.last_view_state = 'extended_forecast'
 
-    @nextcord.ui.button(label='Finanse', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Finanse', style=nextcord.ButtonStyle.blurple, custom_id='finances')
     async def finances(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if StatsView.last_view_state == 'finances':
             return
@@ -50,7 +50,7 @@ class StatsView(View):
 
         StatsView.last_view_state = 'finances'
 
-    @nextcord.ui.button(label='Terminy', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Terminy', style=nextcord.ButtonStyle.blurple, custom_id='deadlines')
     async def deadlines(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if StatsView.last_view_state == 'deadlines':
             return
