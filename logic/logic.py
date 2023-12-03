@@ -163,7 +163,7 @@ async def get_birthday_message(our_server):
         for row in data:
             if row[0] == str(todays_date.day) and row[1] == str(todays_date.month):
                 i = 2
-                while row[i] != '':
+                while i < len(row) and row[i] != '':
                     ret += row[i] + ' - '
                     ret += f'*{row[i + 1]}* - '
                     ret += str(todays_date.year - int(row[i + 1])) + ' lat\n'
