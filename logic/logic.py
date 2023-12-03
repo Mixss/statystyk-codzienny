@@ -262,10 +262,28 @@ def get_hourly_forecast():
 def get_advanced_hourly_forecast():
     data = download_forecast(type='hourly')
 
-    result = {}
+    # hours, temperature, temperature_feel, rainfall, humidity, wind_speed, wind_gust
 
-    for one_hour in data:
-        pass
+    forecast = {
+        'hours': [],
+        'temperature': [],
+        'temperature_feel': [],
+        'rainfall': [],
+        'humidity': [],
+        'wind_speed': [],
+        'wind_gust': [],
+    }
+
+    for sample in data:
+        forecast['hours'].append(sample['DateTime'][11:13])
+        forecast['temperature'].append(sample['Temperature']['Value'])
+        forecast['temperature_feel'].append(sample['RealFeelTemperature']['Value'])
+        forecast['rainfall'].append(sample['TotalLiquid']['Value'])
+        forecast['humidity'].append(sample['RelativeHumidity'])
+        forecast['wind_speed'].append(sample['Wind']['Speed']['Value'])
+        forecast['wind_gust'].append(sample['WindGust']['Speed']['Value'])
+
+    return forecast
 
 
 def get_current_weather():
