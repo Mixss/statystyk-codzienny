@@ -48,7 +48,8 @@ def graph_rainfall(canvas, hours, rainfall, humidity):
 
     secondary_canvas = canvas.twinx()
     secondary_canvas.plot(hours, humidity, color='#ff9914', linewidth=4.0)
-    canvas.bar(hours[:-1], rainfall[:-1], width=0.8, color='#29bf12', edgecolor='#006400', linewidth=2.0, align='edge')
+    canvas.bar(hours[:-1], rainfall[:-1], width=0.8, color='#29bf12', edgecolor='#006400', linewidth=4.0, align='edge')
+    canvas.set_ylim(bottom=0)
 
     canvas.margins(x=0.0)
 
