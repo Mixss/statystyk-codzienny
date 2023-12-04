@@ -74,6 +74,16 @@ days_of_week = {
     6: "niedziela"
 }
 
+days_of_week_capitalized = {
+    0: "Poniedziałek",
+    1: "Wtorek",
+    2: "Środa",
+    3: "Czwartek",
+    4: "Piątek",
+    5: "Sobota",
+    6: "Niedziela"
+}
+
 moon_phases = {
     "New": ":new_moon:",
     "WaningCrescent": ":waning_crescent_moon:",
@@ -135,6 +145,11 @@ def get_day_of_week():
     return days_of_week[day]
 
 
+def get_day_of_week_capitalized():
+    day = datetime.today().weekday()
+    return days_of_week_capitalized[day]
+
+
 def get_sunset_sunrise():
     data = download_forecast(type="daily")
     sunrise = data["DailyForecasts"][0]["Sun"]["Rise"][11:16]
@@ -163,7 +178,7 @@ async def get_birthday_message(our_server):
         for row in data:
             if row[0] == str(todays_date.day) and row[1] == str(todays_date.month):
                 i = 2
-                while row[i] != '':
+                while i < len(row) and row[i] != '':
                     ret += row[i] + ' - '
                     ret += f'*{row[i + 1]}* - '
                     ret += str(todays_date.year - int(row[i + 1])) + ' lat\n'
@@ -262,10 +277,28 @@ def get_hourly_forecast():
 def get_advanced_hourly_forecast():
     data = download_forecast(type='hourly')
 
-    result = {}
+    # hours, temperature, temperature_feel, rainfall, humidity, wind_speed, wind_gust
 
-    for one_hour in data:
-        pass
+    forecast = {
+        'hours': [],
+        'temperature': [],
+        'temperature_feel': [],
+        'rainfall': [],
+        'humidity': [],
+        'wind_speed': [],
+        'wind_gust': [],
+    }
+
+    for sample in data:
+        forecast['hours'].append(sample['DateTime'][11:13])
+        forecast['temperature'].append(sample['Temperature']['Value'])
+        forecast['temperature_feel'].append(sample['RealFeelTemperature']['Value'])
+        forecast['rainfall'].append(sample['TotalLiquid']['Value'])
+        forecast['humidity'].append(sample['RelativeHumidity'])
+        forecast['wind_speed'].append(sample['Wind']['Speed']['Value'])
+        forecast['wind_gust'].append(sample['WindGust']['Speed']['Value'])
+
+    return forecast
 
 
 def get_current_weather():
