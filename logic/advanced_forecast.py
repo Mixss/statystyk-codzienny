@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import matplotlib as mpl
 from scipy.interpolate import make_interp_spline, BSpline
 
-from logic.logic import get_advanced_hourly_forecast
+from logic.logic import get_advanced_hourly_forecast, get_day_of_week_capitalized, get_today
 
 INTERPOLATION_COEFFICIENT = 20
 
@@ -37,7 +37,6 @@ def graph_temperature(canvas, hours, temperatures, temperatures_feel):
     canvas.plot(hours, temperatures_feel, 'b', label="Temperatura odczuwalna", linewidth=4.0)
     canvas.legend(fontsize=14)
 
-    canvas.set_title('Poniedziałek, 24.06')
     canvas.set_ylabel('Temperatura [°C]')
 
     canvas.margins(x=0.0)
@@ -49,7 +48,7 @@ def graph_rainfall(canvas, hours, rainfall, humidity):
 
     secondary_canvas = canvas.twinx()
     secondary_canvas.plot(hours, humidity, color='#ff9914', linewidth=4.0)
-    canvas.bar(hours, rainfall, width=0.7, color='#29bf12', edgecolor='#006400', linewidth=2.0, align='edge')
+    canvas.bar(hours[:-1], rainfall[:-1], width=0.8, color='#29bf12', edgecolor='#006400', linewidth=2.0, align='edge')
 
     canvas.margins(x=0.0)
 
@@ -81,6 +80,8 @@ def generate_graphs_image():
     figure, axes = plt.subplots(3, 1, figsize=(10, 9))
 
     hours = forecast['hours']
+
+    axes[0].set_title(f'{get_day_of_week_capitalized()}, {get_today()}')
 
     graph_temperature(
         axes[0], hours,

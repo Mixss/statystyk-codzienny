@@ -74,6 +74,16 @@ days_of_week = {
     6: "niedziela"
 }
 
+days_of_week_capitalized = {
+    0: "Poniedziałek",
+    1: "Wtorek",
+    2: "Środa",
+    3: "Czwartek",
+    4: "Piątek",
+    5: "Sobota",
+    6: "Niedziela"
+}
+
 moon_phases = {
     "New": ":new_moon:",
     "WaningCrescent": ":waning_crescent_moon:",
@@ -133,6 +143,11 @@ def get_week_of_the_year():
 def get_day_of_week():
     day = datetime.today().weekday()
     return days_of_week[day]
+
+
+def get_day_of_week_capitalized():
+    day = datetime.today().weekday()
+    return days_of_week_capitalized[day]
 
 
 def get_sunset_sunrise():
