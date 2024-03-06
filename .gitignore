@@ -4,3 +4,5 @@ venv/
 .idea/
 logo.png
 .venv/
+assets/generated_images/*.png
+data/forecast_*

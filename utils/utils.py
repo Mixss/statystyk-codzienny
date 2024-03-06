@@ -1,3 +1,4 @@
+import logging
 import os
 
 import nextcord
@@ -52,23 +53,21 @@ def get_channels():
 async def broadcast_stats():
     channel_list = get_channels()
     client = BotObjectHolder.get_bot()
-    print(client)
 
     for el in channel_list:
         channel_id = el["ChannelId"]
         channel = client.get_channel(channel_id)
-        print(channel)
+        server_id = get_guild_id_by_channel_id(channel_id)
+
+        print(f'{datetime.datetime.now()}: Broadcast stats to #{channel}, channelId={channel_id} serverId {server_id}')
 
         forecast_image = nextcord.File('./assets/generated_images/image.png')
 
-        if get_guild_id_by_channel_id(channel_id) == str(OUR_SERVER_ID):
-            embed = await message_templates.daily_stats_embed(forecast_image.filename, our_server=True)
-            await channel.send(embed=embed,
-                               files=[forecast_image])
-        else:
-            embed = await message_templates.daily_stats_embed(forecast_image.filename)
-            await channel.send(embed=embed,
-                               files=[forecast_image])
+        embed = await message_templates.daily_stats_embed(
+            forecast_image.filename,
+            our_server=(server_id == OUR_SERVER_ID))
+
+        await channel.send(embed=embed, files=[forecast_image])
 
 
 @tasks.loop(minutes=30)
@@ -78,8 +77,6 @@ async def send_stats():
     minute = now.minute
     if 4 <= hour < 5:
         if 15 <= minute < 45:
-            print(f"{hour}:{minute} -> wysyłam pobrane statystyki")
-
             generate_forecast_image()
             generate_graphs_image()
 
