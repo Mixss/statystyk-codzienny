@@ -1,9 +1,9 @@
-import asyncio
 import csv
 import json
 import time
 import urllib.request
 from datetime import date, datetime, timedelta
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -92,6 +92,7 @@ moon_phases = {
     "Full": ":full_moon:",
     "WaxingGibbous": ":waxing_gibbous_moon:",
     "FirstQuarter": ":first_quarter_moon:",
+    "First": ":first_quarter_moon:",
     "WaxingCrescent": ":waxing_crescent_moon:"
 }
 
