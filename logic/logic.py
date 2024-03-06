@@ -3,6 +3,7 @@ import json
 import time
 import urllib.request
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -198,6 +199,15 @@ def get_utc_difference():
 
 def download_forecast(type='daily'):
     if type == 'daily':
+        if not Path('data/forecast_daily.json').exists():
+            print(f"{datetime.today()}: forecast_daily.json doesn't exist, downloading new one")
+            with urllib.request.urlopen(
+                    "http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
+                    "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+                data = json.loads(url.read())
+                with open("data/forecast_daily.json", "w") as new_forecast:
+                    json.dump(data, new_forecast)
+
         with open("data/forecast_daily.json") as file:
             data = json.load(file)
         date_of_download = data["DailyForecasts"][0]["Date"][:10]
@@ -216,6 +226,14 @@ def download_forecast(type='daily'):
 
         return data
     if type == 'hourly':
+        if not Path('data/forecast_12_hours.json').exists():
+            with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/275174?apikey"
+                                        "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") \
+                    as url:
+                data = json.loads(url.read())
+                with open("data/forecast_12_hours.json", "w") as new_forecast:
+                    json.dump(data, new_forecast)
+
         with open("data/forecast_12_hours.json") as file:
             data = json.load(file)
         date_of_download = data[0]["DateTime"][:10]
