@@ -13,7 +13,8 @@ client = commands.Bot(command_prefix='s!', intents=Intents().all(), activity=act
 @client.event
 async def on_ready():
     print('\nClient started successfully')
-    send_stats.start()
+    if not send_stats.is_running():
+        send_stats.start()
 
 
 def bot_run():
