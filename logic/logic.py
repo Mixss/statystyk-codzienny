@@ -59,10 +59,12 @@ def get_default_channel(server_id) -> (bool, int, str):
 
 
 def get_channels():
-    with open("data/config.json") as file:
-        data = json.load(file)
-
-    return data["BroadcastChannels"]
+    """
+    Get channels using the utils function which supports environment variables.
+    This avoids code duplication and ensures consistent channel configuration.
+    """
+    from utils.utils import get_channels as utils_get_channels
+    return utils_get_channels()
 
 
 days_of_week = {
