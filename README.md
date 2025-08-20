@@ -65,3 +65,48 @@ sent
   - Advanced/extended weather forecast shown on a graph
   - Finances - currency exchange rates and gas prices
 - `/weather` - shows only the weather
+
+# Deployment
+
+## GitHub Actions (Recommended)
+
+The bot can be deployed using GitHub Actions for automated daily message broadcasting. This approach provides:
+
+- **Reliable scheduling**: Uses GitHub's cron scheduler instead of keeping a bot running 24/7
+- **Cost-effective**: Only runs when needed (once per day)
+- **Easy configuration**: Managed through repository secrets
+- **Better reliability**: No need to maintain persistent hosting
+
+### Setup
+
+1. **Configure Repository Secrets**:
+   - `CLIENT_TOKEN`: Your Discord bot token
+   - `DISCORD_CHANNELS`: JSON array of channel configurations:
+     ```json
+     [
+       {
+         "ServerId": 913375693864308797,
+         "ChannelId": 958119472793780304
+       },
+       {
+         "ServerId": 465940323365814272,
+         "ChannelId": 828951713074380840
+       }
+     ]
+     ```
+
+2. **Enable the Workflow**: The workflow is automatically enabled and will run daily at 4:30 AM UTC.
+
+3. **Manual Testing**: You can manually trigger the workflow from the GitHub Actions tab.
+
+For detailed setup instructions, see [.github/workflows/README.md](.github/workflows/README.md).
+
+## Alternative: Persistent Bot Hosting
+
+You can still run the bot as a persistent service using:
+
+- **Heroku**: Configured via `Procfile` and `docker-publish-heroku.yml`
+- **Docker**: Using the provided `Dockerfile`
+- **Direct hosting**: Running `python main.py` with required environment variables
+
+Note: When using persistent hosting, channel configuration is managed through the `/channel` commands instead of environment variables.

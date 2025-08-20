@@ -1,0 +1,47 @@
+name: Daily Stats Broadcast
+
+on:
+  schedule:
+    # Run every day at 4:30 AM UTC (this matches the original 4-5 AM window)
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+    # Allow manual triggering for testing
+
+jobs:
+  send-daily-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libjpeg-dev zlib1g-dev
+        
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Create required directories
+      run: |
+        mkdir -p assets/generated_images
+        mkdir -p data/deadlines
+        
+    - name: Verify setup
+      run: |
+        python scripts/verify_setup.py
+        
+    - name: Send daily stats
+      env:
+        CLIENT_TOKEN: ${{ secrets.CLIENT_TOKEN }}
+        DISCORD_CHANNELS: ${{ secrets.DISCORD_CHANNELS }}
+      run: |
+        python scripts/send_daily_stats.py
