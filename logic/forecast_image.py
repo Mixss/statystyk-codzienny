@@ -20,7 +20,7 @@ ICON_TOP_OFFSET = 150
 
 HOUR_VERT_OFFSET = 400
 
-WIND_SPEED_LEFT_OFFSET = 20
+WIND_SPEED_LEFT_OFFSET = -30
 WIND_SPEED_TOP_OFFSET = 340
 
 
@@ -133,10 +133,11 @@ def draw_temperatures(image, temperatures, color, font_size):
 
     counter = 0
     for line_x, temp in zip(lines, temperatures):
+        temp = round(temp)
 
         center_x = line_x + SPACE_BETWEEN_LINES / 2
 
-        text_x = center_x - unicode_font.getsize(str(temp) + "°C")[0] / 2
+        text_x = center_x - unicode_font.getlength(str(temp) + "°C") / 2
 
         if counter < 3:
             draw.text((int(text_x), TEMP_TOP_OFFSET), str(temp) + "°C", font=unicode_font, fill=color)
@@ -222,21 +223,25 @@ def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
         rotated_arrow_image = rotation(resized_arrow_image, direction - 180)
 
         if counter < 3:
-            cv.putText(image, str(speed), (int(text_x) + WIND_SPEED_LEFT_OFFSET, WIND_SPEED_TOP_OFFSET), font,
+            cv.putText(image, str(speed) + ' km/h', (int(text_x) + WIND_SPEED_LEFT_OFFSET, WIND_SPEED_TOP_OFFSET - 20), font,
+                       text_scale, color, 1, bottomLeftOrigin=False, lineType=cv.LINE_AA)
+            cv.putText(image, str(round(speed * 0.539957, 1)) + ' kt', (int(text_x) + WIND_SPEED_LEFT_OFFSET + 5, WIND_SPEED_TOP_OFFSET + 30), font,
                        text_scale, color, 1, bottomLeftOrigin=False, lineType=cv.LINE_AA)
 
             text_y = text_size[1] / 2 + WIND_SPEED_TOP_OFFSET
 
-            overlay_image(image, rotated_arrow_image, int(text_x - 35),
+            overlay_image(image, rotated_arrow_image, int(text_x - 80),
                           int(text_y - rotated_arrow_image.shape[1] / 2 - 20))
         else:
-            cv.putText(image, str(speed), (int(text_x) + WIND_SPEED_LEFT_OFFSET, WIND_SPEED_TOP_OFFSET +
-                                           HOUR_VERT_OFFSET), font, text_scale, color, 1, bottomLeftOrigin=False,
+            cv.putText(image, str(speed) + ' km/h', (int(text_x) + WIND_SPEED_LEFT_OFFSET, WIND_SPEED_TOP_OFFSET +
+                                           HOUR_VERT_OFFSET - 20), font, text_scale, color, 1, bottomLeftOrigin=False,
                        lineType=cv.LINE_AA)
+            cv.putText(image, str(round(speed * 0.539957, 1)) + ' kt', (int(text_x) + WIND_SPEED_LEFT_OFFSET + 5, WIND_SPEED_TOP_OFFSET + HOUR_VERT_OFFSET + 30), font,
+                       text_scale, color, 1, bottomLeftOrigin=False, lineType=cv.LINE_AA)
 
             text_y = text_size[1] / 2 + WIND_SPEED_TOP_OFFSET + HOUR_VERT_OFFSET
 
-            overlay_image(image, rotated_arrow_image, int(text_x - 35),
+            overlay_image(image, rotated_arrow_image, int(text_x - 80),
                           int(text_y - rotated_arrow_image.shape[1] / 2 - 20))
         counter += 1
 
@@ -247,17 +252,17 @@ def generate_forecast_image():
 
     image = np.full((IMAGE_HEIGHT, IMAGE_WIDTH, 3), MAIN_BACKGROUND_COLOR, dtype=np.uint8)
 
-    wind_speeds = wind_speeds[::2]
-    wind_directions = wind_directions[::2]
-    hours = hours[::2]
-    temperatures = temperatures[::2]
-    icons = icons[::2]
+    wind_speeds = wind_speeds[8::2]
+    wind_directions = wind_directions[8::2]
+    hours = hours[8::2]
+    temperatures = temperatures[8::2]
+    icons = icons[8::2]
 
     draw_lines(image)
     draw_hours(image, hours, (191, 188, 186), 1.0)
     image = draw_temperatures(image, temperatures, (221, 218, 216), 86)
     draw_icons(image, icons)
-    draw_wind(image, wind_speeds, wind_directions, (191, 188, 186), 1.3)
+    draw_wind(image, wind_speeds, wind_directions, (191, 188, 186), 1.2)
 
     cv.imwrite("assets/generated_images/image.png", image)
 

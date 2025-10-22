@@ -60,17 +60,21 @@ def graph_rainfall(canvas, hours, rainfall, humidity):
 
 def graph_wind(canvas, hours, wind_speed, wind_gust):
 
-    canvas.plot(hours, wind_speed, linewidth=3.0, color='#4189e8')
-    canvas.hlines(wind_gust, xmin=[i - 0.2 for i, x in enumerate(hours)], xmax=[i + 0.2 for i, x in enumerate(hours)], colors='red', label='Podmuchy wiatru')
+    canvas.plot(hours, [x * 0.539957 for x in wind_speed], linewidth=3.0, color='#4189e8')
+    # canvas.set_ylim(canvas.get_ylim()[0] * 0.539957, canvas.get_ylim()[1] * 0.539957)
+    canvas.hlines([x * 0.539957 for x in wind_gust], xmin=[i - 0.2 for i, x in enumerate(hours)], xmax=[i + 0.2 for i, x in enumerate(hours)], colors='red', label='Podmuchy wiatru')
+
+    # canvas.hlines(wind_gust, xmin=[i - 0.2 for i, x in enumerate(hours)], xmax=[i + 0.2 for i, x in enumerate(hours)], colors='red', label='Podmuchy wiatru')
 
     canvas.margins(x=0.0)
 
-    canvas.set_ylabel('Prędkość wiatru [km/h]')
+    canvas.set_ylabel('Prędkość wiatru [kt]')
 
     secondary_canvas = canvas.twinx()
-    secondary_canvas.plot(hours, [x * 1000 / 3600 for x in wind_speed], linewidth=3.0, color='#4189e8')
-    secondary_canvas.set_ylim(canvas.get_ylim()[0] * 1000 / 3600, canvas.get_ylim()[1] * 1000 / 3600)
-    secondary_canvas.set_ylabel('Prędkość wiatru [m/s]')
+    # secondary_canvas.plot(hours, [x * 1000 / 3600 for x in wind_speed], linewidth=3.0, color='#4189e8')
+    secondary_canvas.hlines([x * 0.539957 for x in wind_gust], xmin=[i - 0.2 for i, x in enumerate(hours)], xmax=[i + 0.2 for i, x in enumerate(hours)], colors='red', label='Podmuchy wiatru')
+    secondary_canvas.set_ylim(canvas.get_ylim()[0], canvas.get_ylim()[1])
+    secondary_canvas.set_ylabel('Porywy wiatru [kt]')
 
     canvas.grid(True)
 
