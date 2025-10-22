@@ -1,11 +1,14 @@
-nextcord
+nextcord~=3.0.1
 
-matplotlib
-numpy
-scipy
+matplotlib~=3.10.0
+numpy~=2.2.2
+scipy~=1.15.1
 
-pillow<=9.5.0
+pillow~=11.1.0
 opencv-python-headless==4.5.5.64
-bs4
-requests
+bs4~=0.0.2
+requests~=2.32.3
 setuptools
+opencv-python
+
+beautifulsoup4~=4.13.3

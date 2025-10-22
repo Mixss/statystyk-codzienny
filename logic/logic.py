@@ -154,8 +154,8 @@ def get_day_of_week_capitalized():
 
 def get_sunset_sunrise():
     data = download_forecast(type="daily")
-    sunrise = data["DailyForecasts"][0]["Sun"]["Rise"][11:16]
-    sunset = data["DailyForecasts"][0]["Sun"]["Set"][11:16]
+    sunrise = data['daily']['sunrise'][0][11:16]
+    sunset = data['daily']['sunset'][0][11:16]
 
     return sunrise, sunset
 
@@ -202,15 +202,14 @@ def download_forecast(type='daily'):
         if not Path('data/forecast_daily.json').exists():
             print(f"{datetime.today()}: forecast_daily.json doesn't exist, downloading new one")
             with urllib.request.urlopen(
-                    "http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
-                    "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+                    "https://api.open-meteo.com/v1/forecast?latitude=54.3523&longitude=18.6491&daily=sunrise,sunset,uv_index_max&hourly=temperature_2m,rain,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,apparent_temperature,wind_gusts_10m&timezone=auto&forecast_days=1") as url:
                 data = json.loads(url.read())
                 with open("data/forecast_daily.json", "w") as new_forecast:
                     json.dump(data, new_forecast)
 
         with open("data/forecast_daily.json") as file:
             data = json.load(file)
-        date_of_download = data["DailyForecasts"][0]["Date"][:10]
+        date_of_download = data['hourly']['time'][0][:10]
         todays_date = f"{datetime.today()}"[:10]
 
         if date_of_download != todays_date:
@@ -218,8 +217,7 @@ def download_forecast(type='daily'):
             print("Downloading new file: forecast_daily.json")
 
             with urllib.request.urlopen(
-                    "http://dataservice.accuweather.com/forecasts/v1/daily/1day/275174?apikey"
-                    "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") as url:
+                    "https://api.open-meteo.com/v1/forecast?latitude=54.3523&longitude=18.6491&daily=sunrise,sunset,uv_index_max&hourly=temperature_2m,rain,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,apparent_temperature,wind_gusts_10m&timezone=auto&forecast_days=1") as url:
                 data = json.loads(url.read())
                 with open("data/forecast_daily.json", "w") as new_forecast:
                     json.dump(data, new_forecast)
@@ -227,8 +225,7 @@ def download_forecast(type='daily'):
         return data
     if type == 'hourly':
         if not Path('data/forecast_12_hours.json').exists():
-            with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/275174?apikey"
-                                        "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") \
+            with urllib.request.urlopen("https://api.open-meteo.com/v1/forecast?latitude=54.3523&longitude=18.6491&daily=sunrise,sunset,uv_index_max&hourly=temperature_2m,rain,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,apparent_temperature,wind_gusts_10m&timezone=auto&forecast_days=1") \
                     as url:
                 data = json.loads(url.read())
                 with open("data/forecast_12_hours.json", "w") as new_forecast:
@@ -236,15 +233,15 @@ def download_forecast(type='daily'):
 
         with open("data/forecast_12_hours.json") as file:
             data = json.load(file)
-        date_of_download = data[0]["DateTime"][:10]
+
+        date_of_download = data['hourly']['time'][0][:10]
         todays_date = f"{datetime.today()}"[:10]
 
         if date_of_download != todays_date:
             # forecast data is outdated
             print("Downloading new file: forecast_12_hours.json")
 
-            with urllib.request.urlopen("http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/275174?apikey"
-                                        "=GZcekJNnnT8F1qo8VJteym6lRa54mH2b&language=pl-pl&details=true&metric=true") \
+            with urllib.request.urlopen("https://api.open-meteo.com/v1/forecast?latitude=54.3523&longitude=18.6491&daily=sunrise,sunset,uv_index_max&hourly=temperature_2m,rain,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code,apparent_temperature,wind_gusts_10m&timezone=auto&forecast_days=1") \
                     as url:
                 data = json.loads(url.read())
                 with open("data/forecast_12_hours.json", "w") as new_forecast:
@@ -258,18 +255,18 @@ def download_forecast(type='daily'):
 def get_daily_forecast():
     data = download_forecast(type='daily')
 
-    headline = data["Headline"]["Text"]
-    minTemp = round(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
-    maxTemp = round(data["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"])
-    info = data["DailyForecasts"][0]["Day"]["LongPhrase"]
-    rain = data["DailyForecasts"][0]["Day"]["RainProbability"]
-    air = data["DailyForecasts"][0]["AirAndPollen"][0]["Category"]
-    uvindex = data["DailyForecasts"][0]["AirAndPollen"][5]["Value"]
-    uvdanger = data["DailyForecasts"][0]["AirAndPollen"][5]["Category"]
-    try:
-        moon = moon_phases[data["DailyForecasts"][0]["Moon"]["Phase"]]
-    except KeyError:
-        moon = data["DailyForecasts"][0]["Moon"]["Phase"]
+    # headline = data["Headline"]["Text"]
+    # minTemp = round(data["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"])
+    # maxTemp = round(data["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"])
+    # info = data["DailyForecasts"][0]["Day"]["LongPhrase"]
+    # rain = data["DailyForecasts"][0]["Day"]["RainProbability"]
+    # air = data["DailyForecasts"][0]["AirAndPollen"][0]["Category"]
+    # uvindex = data["DailyForecasts"][0]["AirAndPollen"][5]["Value"]
+    # uvdanger = data["DailyForecasts"][0]["AirAndPollen"][5]["Category"]
+    # try:
+    #     moon = moon_phases[data["DailyForecasts"][0]["Moon"]["Phase"]]
+    # except KeyError:
+    #     moon = data["DailyForecasts"][0]["Moon"]["Phase"]
 
     return headline, minTemp, maxTemp, info, rain, air, uvindex, uvdanger, moon
 
@@ -277,18 +274,11 @@ def get_daily_forecast():
 def get_hourly_forecast():
     data = download_forecast(type='hourly')
 
-    hours = []
-    temperatures = []
-    icons = []
-    wind_speeds = []
-    wind_directions = []
-
-    for one_hour in data:
-        hours.append(one_hour["DateTime"][11:13])
-        temperatures.append(round(one_hour["Temperature"]["Value"]))
-        icons.append(one_hour["WeatherIcon"])
-        wind_speeds.append(one_hour["Wind"]["Speed"]["Value"])
-        wind_directions.append(one_hour["Wind"]["Direction"]["Degrees"])
+    hours = [h[11:13] for h in data['hourly']['time']]
+    temperatures = [t for t in data['hourly']['temperature_2m']]
+    icons = [i for i in data['hourly']['weather_code']]
+    wind_speeds = [w for w in data['hourly']['wind_speed_10m']]
+    wind_directions = [w for w in data['hourly']['wind_direction_10m']]
 
     return hours, temperatures, icons, wind_speeds, wind_directions
 
@@ -299,23 +289,14 @@ def get_advanced_hourly_forecast():
     # hours, temperature, temperature_feel, rainfall, humidity, wind_speed, wind_gust
 
     forecast = {
-        'hours': [],
-        'temperature': [],
-        'temperature_feel': [],
-        'rainfall': [],
-        'humidity': [],
-        'wind_speed': [],
-        'wind_gust': [],
+        'hours': [h[11:13] for h in data['hourly']['time']],
+        'temperature': [t for t in data['hourly']['temperature_2m']],
+        'temperature_feel': [t for t in data['hourly']['apparent_temperature']],
+        'rainfall': [r for r in data['hourly']['rain']],
+        'humidity': [h for h in data['hourly']['relative_humidity_2m']],
+        'wind_speed': [w for w in data['hourly']['wind_speed_10m']],
+        'wind_gust': [w for w in data['hourly']['wind_gusts_10m']],
     }
-
-    for sample in data:
-        forecast['hours'].append(sample['DateTime'][11:13])
-        forecast['temperature'].append(sample['Temperature']['Value'])
-        forecast['temperature_feel'].append(sample['RealFeelTemperature']['Value'])
-        forecast['rainfall'].append(sample['TotalLiquid']['Value'])
-        forecast['humidity'].append(sample['RelativeHumidity'])
-        forecast['wind_speed'].append(sample['Wind']['Speed']['Value'])
-        forecast['wind_gust'].append(sample['WindGust']['Speed']['Value'])
 
     return forecast
 

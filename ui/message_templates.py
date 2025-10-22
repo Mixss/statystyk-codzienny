@@ -8,7 +8,7 @@ from logic.logic import get_sunset_sunrise, get_currencies, get_holiday, get_dai
 
 
 async def daily_stats_embed(image_path, our_server=False):
-    _, _, _, _, _, air_quality, uvidex, _, moon_phase = get_daily_forecast()
+    # _, _, _, _, _, air_quality, uvidex, _, moon_phase = get_daily_forecast()
     birthday_message, num_of_birthdays = await get_birthday_message(our_server)
 
     embed = nextcord.Embed(title=f'Statystyki na dzień **{get_today()}** ({get_day_of_week()}):',
@@ -24,10 +24,10 @@ async def daily_stats_embed(image_path, our_server=False):
     embed.add_field(name='🌇 Zachód słońca', value=get_sunset_sunrise()[1] + '\n‎', inline=True)
 
     embed.add_field(name='👫 Imieniny', value=get_today_names() + '\n‎', inline=True)
-    embed.add_field(name='Faza księżyca', value=moon_phase + '\n‎', inline=True)
-
-    embed.add_field(name='😷 Jakość powietrza', value=air_quality + '\n‎', inline=True)
-    embed.add_field(name='😎 Index UV', value=str(uvidex) + '\n‎', inline=True)
+    # embed.add_field(name='Faza księżyca', value=moon_phase + '\n‎', inline=True)
+    #
+    # embed.add_field(name='😷 Jakość powietrza', value=air_quality + '\n‎', inline=True)
+    # embed.add_field(name='😎 Index UV', value=str(uvidex) + '\n‎', inline=True)
 
     embed.add_field(name='⛅ Prognoza pogody', value=' ', inline=False)
 
