@@ -194,7 +194,7 @@ def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
 
     font = cv.FONT_HERSHEY_DUPLEX
 
-    arrow_image = cv.imread("assets/icons/arrow.png", -1)
+    arrow_image = cv.imread("assets/icons/arrow_up.png", -1)
     resized_arrow_image = cv.resize(arrow_image, (int(arrow_image.shape[0] * 0.5), int(arrow_image.shape[1] * 0.5)),
                                     interpolation=cv.INTER_AREA)
 
@@ -206,7 +206,7 @@ def draw_wind(image, wind_speeds, wind_directions, color, text_scale):
 
         text_x = center_x - text_size[0] / 2
 
-        rotated_arrow_image = rotation(resized_arrow_image, direction - 180)
+        rotated_arrow_image = rotation(resized_arrow_image, 180 - direction)
 
         if counter < 3:
             cv.putText(image, str(speed) + ' km/h', (int(text_x) + WIND_SPEED_LEFT_OFFSET, WIND_SPEED_TOP_OFFSET - 20), font,
