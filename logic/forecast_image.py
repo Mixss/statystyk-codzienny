@@ -3,7 +3,7 @@ import cv2 as cv
 from PIL import ImageFont, ImageDraw, Image
 import math
 
-from logic.logic import get_hourly_forecast
+from logic.logic import get_hourly_forecast, get_sunset_sunrise
 
 IMAGE_WIDTH = 1000
 IMAGE_HEIGHT = 800
@@ -79,46 +79,32 @@ def rotation(image, angle_in_degrees):
     return out_img
 
 
-def icon_file_lookup(icon_number):
-    if icon_number == 1 or icon_number == 2 or icon_number == 4 or icon_number == 30:
-        return "assets/icons/1,2,4,30.png"
-    if icon_number == 3 or icon_number == 6 or icon_number == 20:
-        return "assets/icons/3,6,20.png"
-    if icon_number == 5:
-        return "assets/icons/5.png"
-    if icon_number == 7 or icon_number == 8 or icon_number == 19 or icon_number == 38:
-        return "assets/icons/7,8,19,38.png"
-    if icon_number == 11:
-        return "assets/icons/11.png"
-    if icon_number == 12 or icon_number == 18:
-        return "assets/icons/12,18.png"
-    if icon_number == 13 or icon_number == 14:
-        return "assets/icons/13,14.png"
-    if icon_number == 15 or icon_number == 16 or icon_number == 17:
-        return "assets/icons/15,16,17.png"
-    if icon_number == 21:
-        return "assets/icons/21.png"
-    if icon_number == 22 or icon_number == 23 or icon_number == 24 or icon_number == 25 \
-            or icon_number == 26 or icon_number == 29 or icon_number == 31:
-        return "assets/icons/22,23,24,25,26,29,31.png"
-    if icon_number == 32:
-        return "assets/icons/32.png"
-    if icon_number == 33 or icon_number == 34:
-        return "assets/icons/33,34.png"
-    if icon_number == 35:
-        return "assets/icons/35.png"
-    if icon_number == 36:
-        return "assets/icons/36.png"
-    if icon_number == 37:
-        return "assets/icons/37.png"
-    if icon_number == 39 or icon_number == 40:
-        return "assets/icons/39,40.png"
-    if icon_number == 41 or icon_number == 42:
-        return "assets/icons/41,42.png"
-    if icon_number == 43:
-        return "assets/icons/43.png"
-    if icon_number == 44:
-        return "assets/icons/43.png"
+def icon_file_lookup(hour: str, icon_number):
+    sunrise_time, sunset_time = get_sunset_sunrise()
+    sunrise_time, sunset_time = [(lambda h, m: h + (m >= 30))(int(t.split(':')[0]), int(t.split(':')[1])) for t in [sunrise_time, sunset_time]]
+
+    daytime_attr = 'day' if sunrise_time <= int(hour) <= sunset_time else 'night'
+
+    if icon_number in [0, 1]:
+        return f'assets/icons/{daytime_attr}_0, 1.png'
+    if icon_number in [2]:
+        return f'assets/icons/{daytime_attr}_2.png'
+    if icon_number in [3]:
+        return f'assets/icons/{daytime_attr}_3.png'
+    if icon_number in [45, 48]:
+        return f'assets/icons/{daytime_attr}_45, 48.png'
+    if icon_number in [51, 53, 55]:
+        return f'assets/icons/{daytime_attr}_51, 53, 55.png'
+    if icon_number in [61]:
+        return f'assets/icons/{daytime_attr}_61.png'
+    if icon_number in [63, 65, 80, 81, 82]:
+        return f'assets/icons/{daytime_attr}_63, 65, 80, 81, 82.png'
+    if icon_number in [71, 73, 75, 77, 85, 86]:
+        return f'assets/icons/{daytime_attr}_71, 73, 75, 77, 85, 86.png'
+    if icon_number in [95, 96, 99]:
+        return f'assets/icons/{daytime_attr}_95, 96, 99.png'
+
+    return f'assets/icons/32.png'
 
 
 def draw_temperatures(image, temperatures, color, font_size):
@@ -148,17 +134,17 @@ def draw_temperatures(image, temperatures, color, font_size):
     return np.array(image_pil)
 
 
-def draw_icons(image, icons):
+def draw_icons(image, hours, icons):
 
     lines = create_lines()[:-1]
     lines += lines
 
     counter = 0
-    for (line_x, icon) in zip(lines, icons):
-        icon_image = cv.imread(icon_file_lookup(icon), -1)
 
-        resized_icon_image = cv.resize(icon_image, (SPACE_BETWEEN_LINES - 180, SPACE_BETWEEN_LINES - 180),
-                                       interpolation=cv.INTER_AREA)
+    for (line_x, icon, hour) in zip(lines, icons, hours):
+        icon_image = cv.imread(icon_file_lookup(hour, icon), -1)
+
+        resized_icon_image = cv.resize(icon_image, (SPACE_BETWEEN_LINES - 180, SPACE_BETWEEN_LINES - 180), interpolation=cv.INTER_AREA)
 
         center_x = line_x + SPACE_BETWEEN_LINES / 2
 
@@ -261,7 +247,7 @@ def generate_forecast_image():
     draw_lines(image)
     draw_hours(image, hours, (191, 188, 186), 1.0)
     image = draw_temperatures(image, temperatures, (221, 218, 216), 86)
-    draw_icons(image, icons)
+    draw_icons(image, hours, icons)
     draw_wind(image, wind_speeds, wind_directions, (191, 188, 186), 1.2)
 
     cv.imwrite("assets/generated_images/image.png", image)
