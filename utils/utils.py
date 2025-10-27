@@ -42,6 +42,20 @@ def generate_images():
 
 
 def get_channels():
+    """
+    Get Discord channels from environment variables first, fallback to config.json.
+    Environment variable format: DISCORD_CHANNELS='[{"ServerId": 123, "ChannelId": 456}]'
+    """
+    channels_env = os.getenv('DISCORD_CHANNELS')
+    if channels_env:
+        try:
+            return json.loads(channels_env)
+        except json.JSONDecodeError as e:
+            print(f"Error parsing DISCORD_CHANNELS environment variable: {e}")
+            # Fall back to config.json
+            pass
+    
+    # Fallback to config.json
     with open("data/config.json") as file:
         data = json.load(file)
 
